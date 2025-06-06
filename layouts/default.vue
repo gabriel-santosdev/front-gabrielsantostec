@@ -1,13 +1,14 @@
 <template>
     <v-app>
-        <Navbar />
+        <AppHeader />
         <v-main>
-            <slot />
+            <NuxtPage />
         </v-main>
+        <AppFooter />
     </v-app>
 </template>
 
-<script setup>
-import Navbar from '~/components/Navbar.vue'
-import Footer from '~/components/Footer.vue'
+<script setup lang="ts">
+import AppHeader from '~/components/AppHeader.vue'
+import AppFooter from '~/components/AppFooter.vue'
 </script>

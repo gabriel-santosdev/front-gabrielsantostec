@@ -31,7 +31,8 @@ export default defineNuxtConfig({
         // @ts-expect-error
         config.plugins.push(vuetify({ autoImport: true }))
       }),
-      ['@vueuse/motion/nuxt']
+      ['@vueuse/motion/nuxt'],
+      ['motion-v/nuxt']
     },
     //...
   ],

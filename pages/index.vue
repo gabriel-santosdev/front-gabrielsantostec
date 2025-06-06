@@ -1,6 +1,14 @@
 <template>
-    <v-container>
-        <h1>Bem-vindo ao meu portfólio</h1>
-        <p>Conheça meus projetos e últimas notícias de tecnologia!</p>
-    </v-container>
+    <HeroSection />
+    <AboutSection />
+    <ProjectsSection />
+    <ServicesSection />
+    <ContactSection />
 </template>
+
+<script setup lang="ts">
+import HeroSection from '~/components/HeroSection.vue'
+import AboutSection from '~/components/SkillsSection.vue'
+import ServicesSection from '~/components/ServicesSection.vue'
+import ContactSection from '~/components/ContactSection.vue'
+</script>
