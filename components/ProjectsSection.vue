@@ -1,6 +1,6 @@
 <template>
     <section id="projects" ref="sectionRef" class="py-16">
-        <h2 class="text-4xl font-bold text-center mb-12" :style="{ color: primary }">
+        <h2 class="text-4xl font-bold text-center mb-12 title-section-project" :style="{ color: primary }">
             Meus Projetos
         </h2>
 
@@ -105,6 +105,11 @@ onBeforeUnmount(() => {
 </script>
 
 <style scoped>
+.title-section-project {
+    font-weight: 600;
+    font-size: 2rem;
+}
+
 .text-white {
     color: #f2f2f2;
 }
