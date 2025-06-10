@@ -24,7 +24,8 @@
                     </v-col>
 
                     <v-col cols="12">
-                        <v-btn color="primary" class="contact-btn" large @click="submitForm" :disabled="!formValid">
+                        <v-btn :loading="loading" :disabled="!formValid || loading" color="primary" class="contact-btn"
+                            large @click="submitForm">
                             <v-icon left>mdi-send</v-icon>
                             Enviar Mensagem
                         </v-btn>
@@ -53,7 +54,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
+import { useContactForm } from '@/composables/useContactForm'
 
 const form = ref({
     name: '',
@@ -69,13 +71,27 @@ const rules = {
     email: (v: string) => /.+@.+\..+/.test(v) || 'E-mail inválido'
 }
 
-function submitForm() {
-    if (formValid.value) {
-        // Simula envio...
+
+// Composable com o endpoint do Formspree
+const { sendContactForm, loading, error, success } = useContactForm('https://formspree.io/f/mblygplg')
+
+async function submitForm() {
+    if (!formValid.value) return
+    await sendContactForm(form.value)
+}
+
+watch(success, (val) => {
+    if (val) {
         dialog.value = true
         form.value = { name: '', email: '', message: '' }
     }
-}
+})
+
+watch(error, (val) => {
+    if (val) {
+        alert(`Erro: ${val}`)
+    }
+})
 </script>
 
 <style scoped>

@@ -22,9 +22,9 @@
 
                     <div class="hero-buttons">
                         <a href="https://linkedin.com/in/seu-perfil" target="_blank" class="btn-simple linkedin"
-                            rel="noopener noreferrer">LinkedIn</a>
+                            rel="noopener noreferrer"><i class="mdi mdi-linkedin"></i> LinkedIn</a>
                         <a href="https://github.com/seu-usuario" target="_blank" class="btn-simple github"
-                            rel="noopener noreferrer">GitHub</a>
+                            rel="noopener noreferrer"><i class="mdi mdi-github"></i> GitHub</a>
                     </div>
                 </v-col>
             </v-row>
@@ -91,7 +91,7 @@
 
 .btn-simple {
     font-weight: 600;
-    font-size: 1rem;
+    font-size: 1.3rem;
     color: #f2f2f2;
     text-decoration: none;
     padding: 10px 24px;
@@ -109,13 +109,12 @@
 }
 
 .linkedin {
-    /* Linkedin azul levemente esmaecido */
     color: #0a66c2;
     border-color: transparent;
 }
 
 .linkedin:hover {
-    color: #004182;
+    color: black;
     background: rgba(10, 102, 194, 0.15);
     border-color: #0a66c2;
 }

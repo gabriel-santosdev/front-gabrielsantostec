@@ -58,10 +58,10 @@ const skills = [
 
 .skill-chip {
     font-weight: 600;
-    font-size: 1rem;
-    padding: 12px 20px;
+    font-size: 1rem !important;
+    padding: 12px 20px !important;
     background: linear-gradient(135deg, #6f00ff, #31007f);
-    color: #f2f2f2;
+    color: #f2f2f2 !important;
     box-shadow: 0 4px 12px rgba(111, 0, 255, 0.3);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
     border-radius: 30px;
