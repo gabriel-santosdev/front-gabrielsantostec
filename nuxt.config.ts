@@ -7,6 +7,7 @@ export default defineNuxtConfig({
   runtimeConfig: {
     public: {
       newsApiKey: import.meta.env.NEWS_API_KEY,
+      formEndpoint: import.meta.env.NUXT_PUBLIC_FORMSPREE_ENDPOINT,
       motion: {
         directives: {
           'pop-bottom': {

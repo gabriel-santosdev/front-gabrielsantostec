@@ -33,11 +33,6 @@ const services = [
         description: 'Portfólios personalizados para destacar suas habilidades e trabalhos.'
     },
     {
-        icon: 'mdi-cart',
-        title: 'Lojas Virtuais',
-        description: 'Desenvolvimento de lojas online para expandir seu negócio.'
-    },
-    {
         icon: 'mdi-newspaper',
         title: 'Blogs e Conteúdo',
         description: 'Plataformas para compartilhar notícias, artigos e novidades.'

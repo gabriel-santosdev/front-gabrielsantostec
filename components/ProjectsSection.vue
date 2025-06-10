@@ -110,6 +110,16 @@ onBeforeUnmount(() => {
     font-size: 2rem;
 }
 
+.title-section-project::after {
+    content: '';
+    width: 60px;
+    height: 4px;
+    background: #191919;
+    display: block;
+    margin: 12px auto 0;
+    border-radius: 2px;
+}
+
 .text-white {
     color: #f2f2f2;
 }
