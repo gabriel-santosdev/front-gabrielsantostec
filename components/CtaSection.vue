@@ -24,7 +24,7 @@
 </template>
 
 <script setup lang="ts">
-const whatsappNumber = '5511999999999' // Substitua pelo seu número
+const whatsappNumber = '5511976552081'
 const message = encodeURIComponent(
     'Olá! Tenho interesse em um site profissional. Podemos conversar?'
 )
@@ -55,7 +55,6 @@ const whatsappLink = `https://wa.me/${whatsappNumber}?text=${message}`
 .highlight-btn {
     border-radius: 30px;
     font-weight: 600;
-    text-transform: uppercase;
     transition: all 0.3s ease;
     box-shadow: 0 4px 12px rgba(39, 174, 96, 0.2);
 }
