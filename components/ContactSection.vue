@@ -72,7 +72,6 @@ const rules = {
 }
 
 
-// Composable com o endpoint do Formspree
 const { sendContactForm, loading, error, success } = useContactForm('https://formspree.io/f/mblygplg')
 
 async function submitForm() {
@@ -104,6 +103,16 @@ watch(error, (val) => {
     font-size: 2.5rem;
     font-weight: 700;
     letter-spacing: 1px;
+}
+
+.contact-title::after {
+    content: '';
+    width: 60px;
+    height: 4px;
+    background: #6f00ff;
+    display: block;
+    margin: 12px auto 0;
+    border-radius: 2px;
 }
 
 .contact-subtitle {

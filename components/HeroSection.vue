@@ -1,5 +1,6 @@
 <template>
     <section class="hero" id="hero">
+        <div class="mouse-glow"></div>
         <v-container class="mb-lg-15">
             <v-row align="center" justify="center" no-gutters class="hero-row">
                 <!-- Imagem à esquerda -->
@@ -9,22 +10,30 @@
 
                 <!-- Texto à direita -->
                 <v-col cols="12" md="7" class="hero-text">
-                    <h1 class="hero-title">
-                        Desenvolvedor Web
-                    </h1>
-                    <h2 class="hero-subtitle">Mais de 4 anos de experiência</h2>
+                    <h1 class="hero-title">Desenvolvedor Front-End</h1>
+                    <h2 class="hero-subtitle">Mais de 4 anos desenvolvendo interfaces modernas e eficientes</h2>
                     <p class="hero-description">
-                        Como entusiasta de tecnologia, meu foco é o desenvolvimento web. Busco soluções interativas e
-                        design
-                        atrativo, sempre visando a melhor experiência para o usuário.<br />
-                        Graduado em Análise e Desenvolvimento de Sistemas pela UNINOVE.
+                        Desenvolvedor front-end com mais de 4 anos de experiência em aplicações web modernas, atualmente
+                        atuando na <strong>Bússola Social</strong>. Sou apaixonado por criar experiências digitais
+                        intuitivas, acessíveis e de alta performance, com foco em qualidade de código, escalabilidade e
+                        boas práticas.<br /><br />
+                        Tenho experiência com <strong>Vue.js</strong>, <strong>TypeScript</strong>,
+                        <strong>JavaScript</strong> e testes automatizados, além de já ter contribuído com sistemas em
+                        <strong>React.js</strong> e <strong>HubSpot</strong>.</br><br />
+                        Valorizo a colaboração em equipe, a clareza no código e a entrega de soluções que realmente
+                        façam a diferença para o usuário final. Graduado em Análise e Desenvolvimento de Sistemas.
                     </p>
+
 
                     <div class="hero-buttons">
                         <a href="https://linkedin.com/in/seu-perfil" target="_blank" class="btn-simple linkedin"
-                            rel="noopener noreferrer"><i class="mdi mdi-linkedin"></i> LinkedIn</a>
+                            rel="noopener noreferrer">
+                            <i class="mdi mdi-linkedin"></i> LinkedIn
+                        </a>
                         <a href="https://github.com/seu-usuario" target="_blank" class="btn-simple github"
-                            rel="noopener noreferrer"><i class="mdi mdi-github"></i> GitHub</a>
+                            rel="noopener noreferrer">
+                            <i class="mdi mdi-github"></i> GitHub
+                        </a>
                     </div>
                 </v-col>
             </v-row>
@@ -32,14 +41,56 @@
     </section>
 </template>
 
+<script setup lang="ts">
+import { onMounted, onBeforeUnmount } from 'vue'
+
+onMounted(() => {
+    const section = document.getElementById('hero')
+    const glow = section?.querySelector('.mouse-glow') as HTMLElement
+
+    const updateGlow = (e: MouseEvent) => {
+        if (!glow || !section) return
+        const rect = section.getBoundingClientRect()
+        const x = e.clientX - rect.left
+        const y = e.clientY - rect.top
+        glow.style.background = `radial-gradient(circle at ${x}px ${y}px, rgba(255, 255, 255, 0.15), transparent 60%)`
+    }
+
+    section?.addEventListener('mousemove', updateGlow)
+
+    onBeforeUnmount(() => {
+        section?.removeEventListener('mousemove', updateGlow)
+    })
+})
+</script>
+
 <style scoped>
 .hero {
-    min-height: 80vh;
+    position: relative;
+    overflow: hidden;
+    min-height: 100vh;
     background: linear-gradient(135deg, #6f00ff 0%, #31007f 100%);
     color: #f2f2f2;
     display: flex;
     align-items: center;
     padding: 0 24px;
+}
+
+.mouse-glow {
+    position: absolute;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at center, rgba(255, 255, 255, 0.15), transparent 60%);
+    transition: background-position 0.1s ease;
+    z-index: 0;
+}
+
+.hero>*:not(.mouse-glow) {
+    position: relative;
+    z-index: 1;
 }
 
 .hero-row {
@@ -49,7 +100,7 @@
 .hero-image {
     width: 100%;
     max-width: 320px;
-    border-radius: 16px;
+    border-radius: 30px;
     object-fit: cover;
     transition: transform 0.3s ease;
     cursor: default;
@@ -90,7 +141,6 @@
 }
 
 .btn-simple {
-    font-weight: 600;
     font-size: 1.3rem;
     color: #f2f2f2;
     text-decoration: none;

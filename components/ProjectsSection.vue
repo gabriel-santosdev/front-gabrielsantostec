@@ -1,7 +1,7 @@
 <template>
     <section id="projects" ref="sectionRef" class="py-16">
         <h2 class="text-4xl font-bold text-center mb-12 title-section-project" :style="{ color: primary }">
-            Meus Projetos
+            Projetos Recentes
         </h2>
 
         <v-container>
@@ -107,7 +107,7 @@ onBeforeUnmount(() => {
 <style scoped>
 .title-section-project {
     font-weight: 600;
-    font-size: 2rem;
+    font-size: 2.5rem;
 }
 
 .title-section-project::after {
