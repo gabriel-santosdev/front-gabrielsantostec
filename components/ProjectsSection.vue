@@ -53,25 +53,25 @@ interface Project {
 
 const projects: Project[] = [
     {
-        title: 'Projeto 1',
-        description: 'Descrição breve do projeto 1.',
-        image: 'https://source.unsplash.com/random/800x600?technology',
-        repo: 'https://github.com/exemplo/projeto1',
-        live: 'https://exemplo.com/projeto1'
+        title: 'Acanto GR',
+        description: 'Site institucional para a Acanto GR, com foco em design e performance.',
+        image: 'acanto_gr_teste.png',
+        repo: '',
+        live: 'https://www.acantogr.com.br/'
     },
     {
-        title: 'Projeto 2',
+        title: 'Marechal Segurança',
         description: 'Descrição breve do projeto 2.',
-        image: 'https://source.unsplash.com/random/800x600?design',
-        repo: 'https://github.com/exemplo/projeto2',
-        live: 'https://exemplo.com/projeto2'
+        image: 'marechal_teste_1.png',
+        repo: '',
+        live: 'https://www.marechalseguranca.com.br/'
     },
     {
-        title: 'Projeto 3',
+        title: 'Carvalho Freire',
         description: 'Descrição breve do projeto 3.',
-        image: 'https://source.unsplash.com/random/800x600?code',
-        repo: 'https://github.com/exemplo/projeto3',
-        live: 'https://exemplo.com/projeto3'
+        image: 'carvalho_teste.png',
+        repo: '',
+        live: 'https://carvalhofreire.com.br/'
     }
 ]
 
