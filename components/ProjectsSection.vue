@@ -7,29 +7,37 @@
         <v-container>
             <v-row dense>
                 <v-col v-for="(project, index) in projects" :key="index" cols="12" sm="6" md="4">
-                    <v-card class="project-card" :class="{ visible: isVisible }"
-                        :style="{ backgroundColor: cardBackground, animationDelay: `${index * 0.2}s` }">
-                        <v-img :src="project.image" height="200" cover class="rounded-t-xl" />
+                    <v-card class="project-card" :class="{ visible: isVisible }" :style="{
+                        backgroundImage: `url(${project.image})`,
+                        animationDelay: `${index * 0.2}s`
+                    }">
+                        <div class="info-overlay text-black">
+                            <h3>{{ project.title }}</h3>
+                            <p>{{ project.description }}</p>
 
-                        <v-card-text class="text-white">
-                            <h3 class="text-2xl font-semibold mb-2">
-                                {{ project.title }}
-                            </h3>
-                            <p class="text-base opacity-80">
-                                {{ project.description }}
-                            </p>
-                        </v-card-text>
-
-                        <v-divider class="mx-4"></v-divider>
-
-                        <v-card-actions class="justify-end">
-                            <v-btn icon :href="project.repo" target="_blank" class="hover-btn">
-                                <v-icon color="white">mdi-github</v-icon>
-                            </v-btn>
-                            <v-btn icon :href="project.live" target="_blank" class="hover-btn">
-                                <v-icon color="white">mdi-web</v-icon>
-                            </v-btn>
-                        </v-card-actions>
+                            <div class="flex justify-end gap-2">
+                                <v-tooltip
+                                    :text="project.repo ? 'Repositório no GitHub' : 'Repositório Privado por questões legais'"
+                                    location="top">
+                                    <template v-slot:activator="{ props }">
+                                        <v-btn v-bind="props" icon :href="project.repo" target="_blank"
+                                            class="hover-btn mr-2">
+                                            <v-icon>mdi-github</v-icon>
+                                        </v-btn>
+                                    </template>
+                                </v-tooltip>
+                                <v-tooltip
+                                    :text="project.live ? 'Acessar site' : 'Site não disponível por questões legais'"
+                                    location="top">
+                                    <template v-slot:activator="{ props }">
+                                        <v-btn v-bind="props" icon :href="project.live" target="_blank"
+                                            class="hover-btn">
+                                            <v-icon>mdi-web</v-icon>
+                                        </v-btn>
+                                    </template>
+                                </v-tooltip>
+                            </div>
+                        </div>
                     </v-card>
                 </v-col>
             </v-row>
@@ -41,7 +49,6 @@
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 
 const primary = '#6f00ff'
-const cardBackground = 'rgba(25, 25, 25, 0.8)'
 
 interface Project {
     title: string
@@ -120,19 +127,20 @@ onBeforeUnmount(() => {
     border-radius: 2px;
 }
 
-.text-white {
-    color: #f2f2f2;
-}
-
 .project-card {
-    cursor: pointer;
+    position: relative;
+    height: 350px;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-clip: border-box;
     border-radius: 1rem;
     overflow: hidden;
-    backdrop-filter: blur(8px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    cursor: pointer;
     transform: translateY(50px);
     opacity: 0;
     transition: transform 0.8s ease, opacity 0.8s ease, box-shadow 0.5s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
 .project-card.visible {
@@ -140,7 +148,6 @@ onBeforeUnmount(() => {
     opacity: 1;
 }
 
-/* Hover sofisticado */
 .project-card::before {
     content: "";
     position: absolute;
@@ -148,6 +155,7 @@ onBeforeUnmount(() => {
     background: linear-gradient(135deg, rgba(111, 0, 255, 0.15), rgba(111, 0, 255, 0));
     opacity: 0;
     transition: opacity 0.5s ease;
+    z-index: 1;
 }
 
 .project-card:hover::before {
@@ -159,7 +167,32 @@ onBeforeUnmount(() => {
     box-shadow: 0 16px 40px rgba(111, 0, 255, 0.5);
 }
 
-/* Ícones animados */
+.info-overlay {
+    position: absolute;
+    bottom: 1rem;
+    left: 1rem;
+    right: 1rem;
+    padding: 1rem;
+    backdrop-filter: blur(12px);
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 1rem;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+    z-index: 2;
+    transition: all 0.3s ease;
+}
+
+.info-overlay h3 {
+    font-size: 1.1rem;
+    margin-bottom: 0.25rem;
+}
+
+.info-overlay p {
+    font-size: 0.9rem;
+    line-height: 1.3;
+    margin-bottom: 0.5rem;
+}
+
 .hover-btn {
     cursor: pointer;
     transition: transform 0.3s ease, background-color 0.3s ease;
@@ -168,10 +201,6 @@ onBeforeUnmount(() => {
 .hover-btn:hover {
     background-color: rgba(111, 0, 255, 0.2);
     transform: scale(1.2);
-}
-
-.opacity-80 {
-    opacity: 0.8;
 }
 
 @media (max-width: 600px) {
@@ -183,8 +212,9 @@ onBeforeUnmount(() => {
         transform: translateY(-6px) scale(1.015);
     }
 
-    .text-white h3 {
-        font-size: 1.25rem;
+    .info-overlay {
+        padding: 0.75rem;
+        font-size: 0.85rem;
     }
 }
 </style>
