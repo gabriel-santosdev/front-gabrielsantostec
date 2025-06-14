@@ -26,11 +26,11 @@
 
 
                     <div class="hero-buttons">
-                        <a href="https://linkedin.com/in/seu-perfil" target="_blank" class="btn-simple linkedin"
+                        <a href="https://linkedin.com/in/devgabrielsantos" target="_blank" class="btn-simple linkedin"
                             rel="noopener noreferrer">
                             <i class="mdi mdi-linkedin"></i> LinkedIn
                         </a>
-                        <a href="https://github.com/seu-usuario" target="_blank" class="btn-simple github"
+                        <a href="https://github.com/gabriel-santosdev" target="_blank" class="btn-simple github"
                             rel="noopener noreferrer">
                             <i class="mdi mdi-github"></i> GitHub
                         </a>
