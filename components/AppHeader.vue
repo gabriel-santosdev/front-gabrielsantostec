@@ -32,9 +32,9 @@
 const navItems = [
     { label: 'Início', href: '#hero' },
     { label: 'Skills', href: '#skills' },
+    { label: 'Projetos', href: '#projects' },
     { label: 'Serviços', href: '#services' },
     { label: 'Contato', href: '#contact' },
-    { label: 'Projetos', href: '#projects' }
 ]
 </script>
 

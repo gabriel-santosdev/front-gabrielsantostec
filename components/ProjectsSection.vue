@@ -6,8 +6,8 @@
 
         <v-container>
             <v-row dense>
-                <v-col v-for="(project, index) in projects" :key="index" cols="12" sm="6" md="4">
-                    <v-card class="project-card" :class="{ visible: isVisible }" :style="{
+                <v-col v-for="(project, index) in projects" :key="index" cols="12" class="d-flex flex-column mb-6">
+                    <v-card class="project-card gap-3" variant="text" :class="{ visible: isVisible }" :style="{
                         backgroundImage: `url(${project.image})`,
                         animationDelay: `${index * 0.2}s`
                     }">
@@ -62,21 +62,21 @@ const projects: Project[] = [
     {
         title: 'Acanto GR',
         description: 'Site institucional para a Acanto GR, com foco em design e performance.',
-        image: 'acanto_gr_teste.png',
+        image: 'acanto.png',
         repo: '',
         live: 'https://www.acantogr.com.br/'
     },
     {
         title: 'Marechal Segurança',
         description: 'Descrição breve do projeto 2.',
-        image: 'marechal_teste_1.png',
+        image: 'marechal.png',
         repo: '',
         live: 'https://www.marechalseguranca.com.br/'
     },
     {
         title: 'Carvalho Freire',
         description: 'Descrição breve do projeto 3.',
-        image: 'carvalho_teste.png',
+        image: 'carvalho_freire.png',
         repo: '',
         live: 'https://carvalhofreire.com.br/'
     }
@@ -129,7 +129,7 @@ onBeforeUnmount(() => {
 
 .project-card {
     position: relative;
-    height: 350px;
+    height: 420px;
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -173,7 +173,7 @@ onBeforeUnmount(() => {
     left: 1rem;
     right: 1rem;
     padding: 1rem;
-    backdrop-filter: blur(12px);
+    backdrop-filter: blur(2px);
     background: rgba(255, 255, 255, 0.08);
     border: 1px solid rgba(255, 255, 255, 0.15);
     border-radius: 1rem;
@@ -190,7 +190,6 @@ onBeforeUnmount(() => {
 .info-overlay p {
     font-size: 0.9rem;
     line-height: 1.3;
-    margin-bottom: 0.5rem;
 }
 
 .hover-btn {
