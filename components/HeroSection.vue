@@ -18,10 +18,10 @@
                         intuitivas, acessíveis e de alta performance, com foco em qualidade de código, escalabilidade e
                         boas práticas.<br /><br />
                         Tenho experiência com <strong>Vue.js</strong>, <strong>TypeScript</strong>,
-                        <strong>JavaScript</strong> e testes automatizados, além de já ter contribuído com sistemas em
-                        <strong>React.js</strong> e <strong>HubSpot</strong>.</br><br />
+                        <strong>JavaScript</strong>,<strong>React.js</strong> e testes automatizados.
                         Valorizo a colaboração em equipe, a clareza no código e a entrega de soluções que realmente
-                        façam a diferença para o usuário final. Graduado em Análise e Desenvolvimento de Sistemas.
+                        façam a diferença para o usuário final.<br />Graduado em Análise e Desenvolvimento de
+                        Sistemas.
                     </p>
 
 
