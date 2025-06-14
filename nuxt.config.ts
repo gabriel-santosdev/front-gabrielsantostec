@@ -5,7 +5,10 @@ export default defineNuxtConfig({
       title: 'Gabriel Santos - Desenvolvedor Frontend',
       link: [
         { rel: 'icon', type: 'image/x-icon', sizes: '16x16', href: '/favicon.png' }
-      ]
+      ],
+      htmlAttrs: {
+        lang: 'pt-BR',
+      }
     }
   },
   build: {
