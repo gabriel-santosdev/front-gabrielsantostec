@@ -68,14 +68,14 @@ const projects: Project[] = [
     },
     {
         title: 'Marechal Segurança',
-        description: 'Descrição breve do projeto 2.',
+        description: 'Lading page para a Marechal Segurança, destacando serviços e soluções e direcionamento para sistema de clientes.',
         image: 'marechal.png',
         repo: '',
         live: 'https://www.marechalseguranca.com.br/'
     },
     {
         title: 'Carvalho Freire',
-        description: 'Descrição breve do projeto 3.',
+        description: 'Site institucional para a Carvalho Freire, com foco em design e performance.',
         image: 'carvalho_freire.png',
         repo: '',
         live: 'https://carvalhofreire.com.br/'
