@@ -1,6 +1,13 @@
 import vuetify, { transformAssetUrls } from 'vite-plugin-vuetify'
 export default defineNuxtConfig({
-  //...
+  app: {
+    head: {
+      title: 'Gabriel Santos - Desenvolvedor Frontend',
+      link: [
+        { rel: 'icon', type: 'image/x-icon', sizes: '16x16', href: '/favicon.png' }
+      ]
+    }
+  },
   build: {
     transpile: ['vuetify'],
   },
