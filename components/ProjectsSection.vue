@@ -1,219 +1,233 @@
 <template>
-    <section id="projects" ref="sectionRef" class="py-16">
-        <h2 class="text-4xl font-bold text-center mb-12 title-section-project" :style="{ color: primary }">
-            Projetos Recentes
-        </h2>
+    <section class="gs-section projects" id="projects">
+        <div class="gs-container--wide">
+            <div class="gs-section-header">
+                <div>
+                    <p class="gs-kicker">Portfólio</p>
+                    <h2 class="gs-heading">Projetos recentes.</h2>
+                </div>
+                <a href="#contact" class="gs-link">Quero um projeto assim</a>
+            </div>
 
-        <v-container>
-            <v-row dense>
-                <v-col v-for="(project, index) in projects" :key="index" cols="12" class="d-flex flex-column mb-6">
-                    <v-card class="project-card gap-3" variant="text" :class="{ visible: isVisible }" :style="{
-                        backgroundImage: `url(${project.image})`,
-                        animationDelay: `${index * 0.2}s`
-                    }">
-                        <div class="info-overlay text-black">
-                            <h3>{{ project.title }}</h3>
-                            <p>{{ project.description }}</p>
-
-                            <div class="flex justify-end gap-2">
-                                <v-tooltip
-                                    :text="project.repo ? 'Repositório no GitHub' : 'Repositório Privado por questões legais'"
-                                    location="top">
-                                    <template v-slot:activator="{ props }">
-                                        <v-btn v-bind="props" icon :href="project.repo" target="_blank"
-                                            class="hover-btn mr-2">
-                                            <v-icon>mdi-github</v-icon>
-                                        </v-btn>
-                                    </template>
-                                </v-tooltip>
-                                <v-tooltip
-                                    :text="project.live ? 'Acessar site' : 'Site não disponível por questões legais'"
-                                    location="top">
-                                    <template v-slot:activator="{ props }">
-                                        <v-btn v-bind="props" icon :href="project.live" target="_blank"
-                                            class="hover-btn">
-                                            <v-icon>mdi-web</v-icon>
-                                        </v-btn>
-                                    </template>
-                                </v-tooltip>
-                            </div>
+            <div class="projects__grid">
+                <article v-for="(project, index) in projects" :key="project.title" class="project"
+                    :class="{ 'project--featured': index === 0 }">
+                    <div class="project__text">
+                        <p class="gs-small project__type">{{ project.type }}</p>
+                        <h3 class="project__title">{{ project.title }}</h3>
+                        <p class="gs-body gs-body--muted project__desc">{{ project.description }}</p>
+                        <ul class="project__stack">
+                            <li v-for="tech in project.stack" :key="tech">{{ tech }}</li>
+                        </ul>
+                        <div class="project__links">
+                            <a v-if="project.live" :href="project.live" target="_blank" rel="noopener noreferrer"
+                                class="gs-link">Visitar site</a>
+                            <a v-if="project.repo" :href="project.repo" target="_blank" rel="noopener noreferrer"
+                                class="gs-link">Código</a>
                         </div>
-                    </v-card>
-                </v-col>
-            </v-row>
-        </v-container>
+                    </div>
+                    <a class="project__media" :href="project.live" target="_blank" rel="noopener noreferrer"
+                        :aria-label="`Abrir o site ${project.title}`" tabindex="-1">
+                        <img :src="`/projects/${project.image}-1600.webp`"
+                            :srcset="`/projects/${project.image}-800.webp 800w, /projects/${project.image}-1600.webp 1600w`"
+                            :sizes="index === 0 ? '(max-width: 834px) 100vw, 720px' : '(max-width: 834px) 100vw, 580px'"
+                            :alt="`Site ${project.title} exibido em notebook e celular`" width="1600" height="1103"
+                            :loading="index === 0 ? 'eager' : 'lazy'" decoding="async" />
+                    </a>
+                </article>
+            </div>
+        </div>
     </section>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onBeforeUnmount } from 'vue'
-
-const primary = '#6f00ff'
-
 interface Project {
     title: string
+    type: string
     description: string
     image: string
-    repo: string
-    live: string
+    stack: string[]
+    repo?: string
+    live?: string
 }
 
 const projects: Project[] = [
     {
         title: 'Acanto GR',
-        description: 'Site institucional para a Acanto GR, com foco em design e performance.',
-        image: 'acanto.png',
-        repo: '',
-        live: 'https://www.acantogr.com.br/'
+        type: 'Site institucional',
+        description: 'Site institucional para a Acanto GR, com foco em design, clareza da informação e performance.',
+        image: 'acanto',
+        stack: ['Vue', 'Responsivo', 'SEO'],
+        live: 'https://www.acantogr.com.br/',
     },
     {
         title: 'Marechal Segurança',
-        description: 'Lading page para a Marechal Segurança, destacando serviços e soluções e direcionamento para sistema de clientes.',
-        image: 'marechal.png',
-        repo: '',
-        live: 'https://www.marechalseguranca.com.br/'
+        type: 'Landing page',
+        description:
+            'Landing page que destaca serviços e soluções da Marechal Segurança e direciona clientes para o sistema de acompanhamento.',
+        image: 'marechal',
+        stack: ['Landing page', 'Conversão', 'Responsivo'],
+        live: 'https://www.marechalseguranca.com.br/',
     },
     {
         title: 'Carvalho Freire',
+        type: 'Site institucional',
         description: 'Site institucional para a Carvalho Freire, com foco em design e performance.',
-        image: 'carvalho_freire.png',
-        repo: '',
-        live: 'https://carvalhofreire.com.br/'
-    }
+        image: 'carvalho_freire',
+        stack: ['Institucional', 'Performance', 'SEO'],
+        live: 'https://carvalhofreire.com.br/',
+    },
 ]
-
-const sectionRef = ref<HTMLElement | null>(null)
-const isVisible = ref(false)
-
-let observer: IntersectionObserver
-
-onMounted(() => {
-    observer = new IntersectionObserver(
-        (entries) => {
-            entries.forEach((entry) => {
-                isVisible.value = entry.isIntersecting
-            })
-        },
-        {
-            threshold: 0.2
-        }
-    )
-
-    if (sectionRef.value) {
-        observer.observe(sectionRef.value)
-    }
-})
-
-onBeforeUnmount(() => {
-    if (sectionRef.value) {
-        observer.unobserve(sectionRef.value)
-    }
-})
 </script>
 
 <style scoped>
-.title-section-project {
-    font-weight: 600;
-    font-size: 2.5rem;
+.projects {
+    background: var(--color-gallery-white);
 }
 
-.title-section-project::after {
-    content: '';
-    width: 60px;
-    height: 4px;
-    background: #191919;
-    display: block;
-    margin: 12px auto 0;
-    border-radius: 2px;
+.projects__grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--element-gap);
 }
 
-.project-card {
-    position: relative;
-    height: 420px;
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    background-clip: border-box;
-    border-radius: 1rem;
+.project {
+    display: flex;
+    flex-direction: column;
+    background: var(--color-studio-mist);
+    border-radius: var(--radius-cards);
     overflow: hidden;
-    cursor: pointer;
-    transform: translateY(50px);
-    opacity: 0;
-    transition: transform 0.8s ease, opacity 0.8s ease, box-shadow 0.5s ease;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
-.project-card.visible {
-    transform: translateY(0);
-    opacity: 1;
+/* Mídia: fundo igual ao estúdio do mockup para a imagem "sumir" na borda */
+.project__media {
+    order: -1;
+    display: block;
+    background: #d0d0d0;
+    overflow: hidden;
 }
 
-.project-card::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(135deg, rgba(111, 0, 255, 0.15), rgba(111, 0, 255, 0));
-    opacity: 0;
-    transition: opacity 0.5s ease;
-    z-index: 1;
+.project__media img {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1600 / 1103;
+    object-fit: cover;
+    transform: scale(1.001);
+    transition: transform 0.8s cubic-bezier(0.2, 0.7, 0.2, 1);
 }
 
-.project-card:hover::before {
-    opacity: 1;
+.project:hover .project__media img {
+    transform: scale(1.04);
 }
 
-.project-card:hover {
-    transform: translateY(-12px) rotateZ(-0.8deg) scale(1.03);
-    box-shadow: 0 16px 40px rgba(111, 0, 255, 0.5);
+.project__text {
+    padding: 32px 40px 40px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
 }
 
-.info-overlay {
-    position: absolute;
-    bottom: 1rem;
-    left: 1rem;
-    right: 1rem;
-    padding: 1rem;
-    backdrop-filter: blur(2px);
-    background: rgba(255, 255, 255, 0.08);
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    border-radius: 1rem;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
-    z-index: 2;
-    transition: all 0.3s ease;
+.project--featured {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
 }
 
-.info-overlay h3 {
-    font-size: 1.1rem;
-    margin-bottom: 0.25rem;
+.project--featured .project__media {
+    order: 2;
 }
 
-.info-overlay p {
-    font-size: 0.9rem;
-    line-height: 1.3;
+.project--featured .project__media img {
+    height: 100%;
+    aspect-ratio: auto;
+    min-height: 420px;
 }
 
-.hover-btn {
-    cursor: pointer;
-    transition: transform 0.3s ease, background-color 0.3s ease;
+.project--featured .project__text {
+    padding: 56px;
+    justify-content: center;
 }
 
-.hover-btn:hover {
-    background-color: rgba(111, 0, 255, 0.2);
-    transform: scale(1.2);
+.project__type {
+    margin-bottom: 8px;
 }
 
-@media (max-width: 600px) {
-    .project-card {
-        border-radius: 0.75rem;
+.project__title {
+    font-family: var(--font-display);
+    font-size: 32px;
+    font-weight: 600;
+    line-height: 1.125;
+    letter-spacing: 0.004em;
+    color: var(--color-ink);
+    margin: 0;
+}
+
+.project--featured .project__title {
+    font-size: 40px;
+    line-height: 1.1;
+}
+
+.project__desc {
+    margin-top: 12px;
+}
+
+.project__stack {
+    list-style: none;
+    margin: 20px 0 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 16px;
+}
+
+.project__stack li {
+    font-size: 12px;
+    line-height: 16px;
+    letter-spacing: -0.12px;
+    color: var(--color-slate);
+}
+
+.project__links {
+    display: flex;
+    gap: 24px;
+    margin-top: auto;
+    padding-top: 24px;
+}
+
+@media (max-width: 834px) {
+    .projects__grid {
+        grid-template-columns: 1fr;
     }
 
-    .project-card:hover {
-        transform: translateY(-6px) scale(1.015);
+    .project--featured {
+        display: flex;
     }
 
-    .info-overlay {
-        padding: 0.75rem;
-        font-size: 0.85rem;
+    .project--featured .project__media {
+        order: -1;
+    }
+
+    .project--featured .project__media img {
+        height: auto;
+        min-height: 0;
+        aspect-ratio: 1600 / 1103;
+    }
+
+    .project__text,
+    .project--featured .project__text {
+        padding: 28px var(--card-padding) var(--card-padding);
+    }
+
+    .project__title,
+    .project--featured .project__title {
+        font-size: 28px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .project__media img {
+        transition: none;
     }
 }
 </style>

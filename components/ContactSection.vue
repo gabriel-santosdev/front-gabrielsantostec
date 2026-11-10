@@ -1,137 +1,236 @@
 <template>
-    <section class="contact" id="contact">
-        <v-container class="py-20 text-center">
-            <h2 class="contact-title mb-4">Contato</h2>
-            <p class="contact-subtitle mb-8">
-                Tem um projeto ou ideia? Vamos conversar e criar algo incrível juntos.
-            </p>
+    <section class="gs-section gs-section--mist" id="contact">
+        <div class="gs-container contact">
+            <div class="contact__intro">
+                <p class="gs-kicker">Contato</p>
+                <h2 class="gs-heading">Vamos conversar.</h2>
+                <p class="gs-body gs-body--muted contact__lead">
+                    Projeto, oportunidade ou skills para IA? Me mande uma mensagem e eu respondo o mais breve
+                    possível.
+                </p>
+                <ul class="contact__channels">
+                    <li><a :href="whatsapp" target="_blank" rel="noopener noreferrer" class="gs-link">WhatsApp</a></li>
+                    <li><a href="https://linkedin.com/in/devgabrielsantos" target="_blank" rel="noopener noreferrer"
+                            class="gs-link">LinkedIn</a></li>
+                    <li><a href="https://github.com/gabriel-santosdev" target="_blank" rel="noopener noreferrer"
+                            class="gs-link">GitHub</a></li>
+                </ul>
+            </div>
 
-            <v-form v-model="formValid" ref="contactForm">
-                <v-row class="justify-center">
-                    <v-col cols="12" md="6">
-                        <v-text-field v-model="form.name" label="Nome" :rules="[rules.required]" outlined dense
-                            color="primary" />
-                    </v-col>
+            <form class="gs-card contact__form" novalidate @submit.prevent="submitForm">
+                <div v-if="success" class="contact__success" role="status">
+                    <i class="mdi mdi-check-circle-outline" aria-hidden="true"></i>
+                    <p class="gs-feature-heading">Mensagem enviada.</p>
+                    <p class="gs-small">Obrigado pelo contato! Responderei o mais breve possível.</p>
+                    <button type="button" class="gs-link contact__reset" @click="success = false">Enviar outra
+                        mensagem</button>
+                </div>
 
-                    <v-col cols="12" md="6">
-                        <v-text-field v-model="form.email" label="E-mail" :rules="[rules.required, rules.email]"
-                            outlined dense color="primary" />
-                    </v-col>
+                <template v-else>
+                    <label class="field">
+                        <span class="field__label">Nome</span>
+                        <input v-model.trim="form.name" type="text" name="name" autocomplete="name"
+                            :aria-invalid="touched && !form.name" />
+                        <span v-if="touched && !form.name" class="field__error">Campo obrigatório</span>
+                    </label>
 
-                    <v-col cols="12">
-                        <v-textarea v-model="form.message" label="Mensagem" :rules="[rules.required]" outlined rows="4"
-                            color="primary" />
-                    </v-col>
+                    <label class="field">
+                        <span class="field__label">E-mail</span>
+                        <input v-model.trim="form.email" type="email" name="email" autocomplete="email"
+                            :aria-invalid="touched && !emailValid" />
+                        <span v-if="touched && !emailValid" class="field__error">Informe um e-mail válido</span>
+                    </label>
 
-                    <v-col cols="12">
-                        <v-btn :loading="loading" :disabled="!formValid || loading" color="primary" class="contact-btn"
-                            large @click="submitForm">
-                            <v-icon left>mdi-send</v-icon>
-                            Enviar Mensagem
-                        </v-btn>
-                    </v-col>
-                </v-row>
-            </v-form>
+                    <label class="field">
+                        <span class="field__label">Assunto</span>
+                        <select v-model="form.subject" name="subject">
+                            <option v-for="option in subjects" :key="option" :value="option">{{ option }}</option>
+                        </select>
+                    </label>
 
-            <!-- Modal de Sucesso -->
-            <v-dialog v-model="dialog" max-width="400">
-                <v-card>
-                    <v-card-title class="headline">
-                        Mensagem Enviada!
-                        <v-icon color="success" class="mr-3 mb-3">mdi-check-bold</v-icon>
-                    </v-card-title>
-                    <v-card-text>
-                        Obrigado pelo contato. Responderei o mais breve possível.
-                    </v-card-text>
-                    <v-card-actions>
-                        <v-spacer />
-                        <v-btn color="primary" text @click="dialog = false">Fechar</v-btn>
-                    </v-card-actions>
-                </v-card>
-            </v-dialog>
-        </v-container>
+                    <label class="field">
+                        <span class="field__label">Mensagem</span>
+                        <textarea v-model.trim="form.message" name="message" rows="5"
+                            :aria-invalid="touched && !form.message"></textarea>
+                        <span v-if="touched && !form.message" class="field__error">Campo obrigatório</span>
+                    </label>
+
+                    <p v-if="error" class="field__error contact__error" role="alert">
+                        Não foi possível enviar agora. Tente novamente ou fale comigo pelo WhatsApp.
+                    </p>
+
+                    <button type="submit" class="gs-btn gs-btn--primary contact__submit" :disabled="loading">
+                        {{ loading ? 'Enviando…' : 'Enviar mensagem' }}
+                    </button>
+                </template>
+            </form>
+        </div>
     </section>
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useContactForm } from '@/composables/useContactForm'
+import { whatsappLink } from '~/utils/whatsapp'
 
-const form = ref({
-    name: '',
-    email: '',
-    message: ''
-})
+const subjects = ['Projeto / orçamento', 'Skills para IA', 'Oportunidade de trabalho', 'Outro assunto']
 
-const formValid = ref(false)
-const dialog = ref(false)
+const emptyForm = () => ({ name: '', email: '', subject: subjects[0], message: '' })
+const form = ref(emptyForm())
+const touched = ref(false)
 
-const rules = {
-    required: (v: string) => !!v || 'Campo obrigatório',
-    email: (v: string) => /.+@.+\..+/.test(v) || 'E-mail inválido'
-}
+const whatsapp = whatsappLink('Olá, Gabriel! Vim pelo seu site.')
 
+const emailValid = computed(() => /.+@.+\..+/.test(form.value.email))
+const formValid = computed(() => !!form.value.name && emailValid.value && !!form.value.message)
 
 const { sendContactForm, loading, error, success } = useContactForm('https://formspree.io/f/mblygplg')
 
 async function submitForm() {
+    touched.value = true
     if (!formValid.value) return
     await sendContactForm(form.value)
 }
 
 watch(success, (val) => {
     if (val) {
-        dialog.value = true
-        form.value = { name: '', email: '', message: '' }
-    }
-})
-
-watch(error, (val) => {
-    if (val) {
-        alert(`Erro: ${val}`)
+        form.value = emptyForm()
+        touched.value = false
     }
 })
 </script>
 
 <style scoped>
 .contact {
-    background-color: #191919;
-    color: #f2f2f2;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+    gap: 64px;
+    align-items: start;
 }
 
-.contact-title {
-    font-size: 2.5rem;
-    font-weight: 700;
-    letter-spacing: 1px;
+.contact__lead {
+    margin-top: 20px;
 }
 
-.contact-title::after {
-    content: '';
-    width: 60px;
-    height: 4px;
-    background: #6f00ff;
-    display: block;
-    margin: 12px auto 0;
-    border-radius: 2px;
+.contact__channels {
+    list-style: none;
+    margin: 32px 0 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
 }
 
-.contact-subtitle {
-    font-size: 1.1rem;
-    color: #ccc;
-    max-width: 600px;
-    margin: 0 auto;
+.contact__form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 40px;
 }
 
-.contact-btn {
-    border-radius: 30px;
-    text-transform: uppercase;
+.field {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.field__label {
+    font-size: 12px;
     font-weight: 600;
-    letter-spacing: 1px;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    line-height: 16px;
+    letter-spacing: -0.12px;
+    color: var(--color-ink);
 }
 
-.contact-btn:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 4px 14px rgba(111, 0, 255, 0.5);
+.field input,
+.field select,
+.field textarea {
+    font-family: var(--font-text);
+    font-size: 17px;
+    line-height: 1.47;
+    letter-spacing: -0.374px;
+    color: var(--color-ink);
+    background: var(--color-gallery-white);
+    border: 1px solid var(--color-steel);
+    border-radius: 12px;
+    padding: 12px 16px;
+    outline: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    width: 100%;
+}
+
+.field select {
+    appearance: auto;
+}
+
+.field textarea {
+    resize: vertical;
+    min-height: 140px;
+}
+
+.field input:focus,
+.field select:focus,
+.field textarea:focus {
+    border-color: var(--color-pricing-blue);
+    box-shadow: 0 0 0 3px rgba(0, 113, 227, 0.2);
+}
+
+.field [aria-invalid='true'] {
+    border-color: var(--color-launch-orange);
+}
+
+.field__error {
+    font-size: 12px;
+    line-height: 16px;
+    letter-spacing: -0.12px;
+    color: var(--color-launch-orange);
+}
+
+.contact__error {
+    margin: 0;
+}
+
+.contact__submit {
+    align-self: flex-start;
+}
+
+.contact__success {
+    text-align: center;
+    padding: 32px 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+.contact__success .mdi {
+    font-size: 48px;
+    line-height: 1;
+    color: var(--color-ink);
+    margin-bottom: 8px;
+}
+
+.contact__reset {
+    background: none;
+    border: 0;
+    padding: 0;
+    margin-top: 16px;
+    cursor: pointer;
+    font-family: inherit;
+}
+
+@media (max-width: 834px) {
+    .contact {
+        grid-template-columns: 1fr;
+        gap: 40px;
+    }
+
+    .contact__form {
+        padding: var(--card-padding);
+    }
+
+    .contact__submit {
+        align-self: stretch;
+    }
 }
 </style>

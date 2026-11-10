@@ -1,80 +1,116 @@
 <template>
-    <section class="skills-section" id="skills">
-        <v-container>
-            <h2 class="skills-title">Minhas Skills</h2>
+    <section class="gs-section gs-section--mist" id="stack">
+        <div class="gs-container">
+            <div class="gs-section-header">
+                <h2 class="gs-heading">Stack.</h2>
+                <a href="https://github.com/gabriel-santosdev" target="_blank" rel="noopener noreferrer"
+                    class="gs-link">Ver código no GitHub</a>
+            </div>
 
-            <v-row class="skills-row" justify="center">
-                <v-col v-for="(skill, index) in skills" :key="index" cols="6" sm="4" md="3"
-                    class="d-flex justify-center">
-                    <v-chip class="skill-chip" large color="primary" variant="elevated">
-                        <v-icon start>{{ skill.icon }}</v-icon>
-                        {{ skill.name }}
-                    </v-chip>
-                </v-col>
-            </v-row>
-        </v-container>
+            <div class="skills__grid">
+                <article v-for="group in groups" :key="group.title" class="gs-card skills__card">
+                    <i :class="['mdi', group.icon, 'skills__icon']" aria-hidden="true"></i>
+                    <h3 class="gs-feature-heading">{{ group.title }}</h3>
+                    <p class="gs-small skills__desc">{{ group.description }}</p>
+                    <ul class="skills__list">
+                        <li v-for="item in group.items" :key="item">{{ item }}</li>
+                    </ul>
+                </article>
+            </div>
+        </div>
     </section>
 </template>
 
 <script setup lang="ts">
-const skills = [
-    { name: 'HTML', icon: 'mdi-language-html5' },
-    { name: 'CSS', icon: 'mdi-language-css3' },
-    { name: 'JavaScript', icon: 'mdi-language-javascript' },
-    { name: 'TypeScript', icon: 'mdi-language-typescript' },
-    { name: 'Vue', icon: 'mdi-vuejs' },
-    { name: 'Nuxt', icon: 'mdi-nuxt' },
-    { name: 'React', icon: 'mdi-react' },
-    { name: 'Design System', icon: 'mdi-palette' },
-    { name: 'SCSS', icon: 'mdi-sass' },
-    { name: 'Next.js', icon: 'mdi-web' }
+const groups = [
+    {
+        title: 'Linguagens',
+        icon: 'mdi-code-tags',
+        description: 'A base de toda interface web.',
+        items: ['TypeScript', 'JavaScript', 'PHP', 'SQL', 'HTML', 'CSS'],
+    },
+    {
+        title: 'Back-end e arquitetura',
+        icon: 'mdi-server-outline',
+        description: 'APIs, regras de negócio e integração entre serviços.',
+        items: ['PHP e Laravel', 'Node.js (BFF)', 'APIs REST', 'SQL e modelagem de dados', 'Micro Frontends', 'GCP'],
+    },
+    {
+        title: 'Front-end',
+        icon: 'mdi-layers-outline',
+        description: 'Aplicações reativas, SSR, SSG e PWA.',
+        items: ['Vue.js 2 e 3', 'Nuxt', 'React', 'Next.js', 'Angular'],
+    },
+    {
+        title: 'UI e Design Systems',
+        icon: 'mdi-palette-outline',
+        description: 'Componentes consistentes, documentados e escaláveis.',
+        items: ['Storybook', 'SCSS', 'Material-UI', 'Vuetify', 'i18n', 'HubSpot / HubL'],
+    },
+    {
+        title: 'Qualidade',
+        icon: 'mdi-check-decagram-outline',
+        description: 'Código confiável do primeiro commit ao deploy.',
+        items: ['Jest', 'Vitest', 'Cypress (E2E)', 'Code review', 'Clean Code', 'Performance'],
+    },
+    {
+        title: 'Inteligência Artificial',
+        icon: 'mdi-creation-outline',
+        description: 'IA aplicada a produtos reais.',
+        items: ['MCP (Model Context Protocol)', 'Chat com IA', 'Relatórios com IA'],
+    },
 ]
 </script>
 
 <style scoped>
-.skills-section {
-    background: linear-gradient(135deg, #191919, #31007f);
-    padding: 80px 20px;
-    color: #f2f2f2;
+.skills__grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--element-gap);
 }
 
-.skills-title {
-    font-size: 2.5rem;
-    font-weight: 700;
-    text-align: center;
-    margin-bottom: 50px;
-    position: relative;
+.skills__card {
+    padding: 40px;
 }
 
-.skills-title::after {
-    content: '';
-    width: 60px;
-    height: 4px;
-    background: #6f00ff;
+.skills__icon {
     display: block;
-    margin: 12px auto 0;
-    border-radius: 2px;
+    font-size: 32px;
+    line-height: 1;
+    color: var(--color-ink);
+    margin-bottom: 20px;
 }
 
-.skill-chip {
-    font-weight: 600;
-    padding: 12px 20px !important;
-    background: linear-gradient(135deg, #6f00ff, #31007f);
-    color: #f2f2f2 !important;
-    box-shadow: 0 4px 12px rgba(111, 0, 255, 0.3);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    border-radius: 30px;
-    cursor: default;
+.skills__desc {
+    margin-top: 8px;
 }
 
-.skill-chip:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 6px 16px rgba(111, 0, 255, 0.5);
+.skills__list {
+    list-style: none;
+    margin: 28px 0 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
 }
 
-.skills-row {
-    max-width: 900px;
-    margin: 0 auto;
-    gap: 16px;
+.skills__list li {
+    font-size: 14px;
+    line-height: 1.29;
+    letter-spacing: -0.224px;
+    color: var(--color-ink);
+    padding: 8px 14px;
+    border-radius: var(--radius-buttons);
+    box-shadow: inset 0 0 0 1px var(--color-hairline-silver);
+}
+
+@media (max-width: 734px) {
+    .skills__grid {
+        grid-template-columns: 1fr;
+    }
+
+    .skills__card {
+        padding: var(--card-padding);
+    }
 }
 </style>

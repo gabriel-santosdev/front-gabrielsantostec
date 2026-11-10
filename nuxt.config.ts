@@ -2,15 +2,26 @@ import vuetify, { transformAssetUrls } from 'vite-plugin-vuetify'
 export default defineNuxtConfig({
   app: {
     head: {
-      title: 'Gabriel Santos - Desenvolvedor Frontend',
+      title: 'Gabriel Santos | Software Engineer Full Stack',
+      meta: [
+        {
+          name: 'description',
+          content: 'Gabriel Santos, Software Engineer Full Stack com mais de 4 anos de experiência em Laravel, Node.js, Vue, React, Angular e TypeScript. Currículo, projetos, serviços e skills de front-end para agentes de IA.'
+        },
+        { name: 'theme-color', content: '#ffffff' }
+      ],
       link: [
-        { rel: 'icon', type: 'image/x-icon', sizes: '16x16', href: '/favicon.png' }
+        { rel: 'icon', type: 'image/x-icon', sizes: '16x16', href: '/favicon.png' },
+        { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
+        { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: '' },
+        { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap' }
       ],
       htmlAttrs: {
         lang: 'pt-BR',
       }
     }
   },
+  css: ['~/assets/css/main.css'],
   build: {
     transpile: ['vuetify'],
   },

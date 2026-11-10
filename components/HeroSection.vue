@@ -1,225 +1,297 @@
 <template>
     <section class="hero" id="hero">
-        <div class="mouse-glow"></div>
-        <v-container class="mb-lg-15">
-            <v-row align="center" justify="center" no-gutters class="hero-row">
-                <!-- Imagem à esquerda -->
-                <v-col cols="12" md="5" class="d-flex justify-center">
-                    <v-img src="../public/profile-gs.jpeg" alt="Foto do Desenvolvedor" class="hero-image" contain />
-                </v-col>
+        <div class="hero__text">
+            <p class="gs-kicker">Gabriel Santos · Software Engineer Full Stack</p>
+            <h1 class="gs-display">Do banco de dados<br />à interface.</h1>
+            <p class="hero__lead">
+                Desenvolvo produtos web de ponta a ponta: APIs e regras de negócio com Laravel e Node.js,
+                interfaces com Vue, React e Angular, e integrações com Inteligência Artificial.
+            </p>
 
-                <!-- Texto à direita -->
-                <v-col cols="12" md="7" class="hero-text">
-                    <h1 class="hero-title">Desenvolvedor Front-End</h1>
-                    <h2 class="hero-subtitle">Mais de 4 anos desenvolvendo interfaces modernas e eficientes</h2>
-                    <p class="hero-description">
-                        Desenvolvedor front-end com mais de 4 anos de experiência em aplicações web modernas, atualmente
-                        atuando na <strong>Bússola Social</strong>. Sou apaixonado por criar experiências digitais
-                        intuitivas, acessíveis e de alta performance, com foco em qualidade de código, escalabilidade e
-                        boas práticas.<br /><br />
-                        Tenho experiência com <strong>Vue.js</strong>, <strong>TypeScript</strong>,
-                        <strong>JavaScript</strong>,<strong>React.js</strong> e testes automatizados.
-                        Valorizo a colaboração em equipe, a clareza no código e a entrega de soluções que realmente
-                        façam a diferença para o usuário final.<br />Graduado em Análise e Desenvolvimento de
-                        Sistemas.
-                    </p>
+            <div class="hero__actions">
+                <a href="#cv" class="gs-btn gs-btn--primary">Ver currículo</a>
+                <a href="#projects" class="gs-btn gs-btn--outline">Ver projetos</a>
+            </div>
 
+            <div class="hero__social">
+                <a href="https://linkedin.com/in/devgabrielsantos" target="_blank" rel="noopener noreferrer"
+                    class="gs-link">LinkedIn</a>
+                <a href="https://github.com/gabriel-santosdev" target="_blank" rel="noopener noreferrer"
+                    class="gs-link">GitHub</a>
+            </div>
+        </div>
 
-                    <div class="hero-buttons">
-                        <a href="https://linkedin.com/in/devgabrielsantos" target="_blank" class="btn-simple linkedin"
-                            rel="noopener noreferrer">
-                            <i class="mdi mdi-linkedin"></i> LinkedIn
-                        </a>
-                        <a href="https://github.com/gabriel-santosdev" target="_blank" class="btn-simple github"
-                            rel="noopener noreferrer">
-                            <i class="mdi mdi-github"></i> GitHub
-                        </a>
+        <div class="hero__stage" aria-hidden="true">
+            <div class="editor">
+                <div class="editor__pane" v-for="file in files" :key="file.name">
+                    <div class="editor__tab">
+                        <span class="editor__layer">{{ file.layer }}</span>
+                        <span class="editor__name">{{ file.name }}</span>
                     </div>
-                </v-col>
-            </v-row>
-        </v-container>
+                    <pre class="editor__code"><code v-html="highlight(file.code)"></code></pre>
+                </div>
+            </div>
+
+            <div class="hero__callout">
+                <div>
+                    <p class="hero__callout-title">Disponível para novos projetos</p>
+                    <p class="hero__callout-sub">Freelance, consultoria e skills para IA</p>
+                </div>
+                <a href="#contact" class="gs-btn gs-btn--primary gs-btn--sm" tabindex="-1">Contato</a>
+            </div>
+        </div>
     </section>
 </template>
 
 <script setup lang="ts">
-import { onMounted, onBeforeUnmount } from 'vue'
+const files = [
+    {
+        layer: 'Back-end',
+        name: 'ReportController.php',
+        code: `class ReportController extends Controller
+{
+    public function store(ReportRequest $request)
+    {
+        $data = $this->finance->query(
+            $request->filters()
+        );
 
-onMounted(() => {
-    const section = document.getElementById('hero')
-    const glow = section?.querySelector('.mouse-glow') as HTMLElement
-
-    const updateGlow = (e: MouseEvent) => {
-        if (!glow || !section) return
-        const rect = section.getBoundingClientRect()
-        const x = e.clientX - rect.left
-        const y = e.clientY - rect.top
-        glow.style.background = `radial-gradient(circle at ${x}px ${y}px, rgba(255, 255, 255, 0.15), transparent 60%)`
+        return new ReportResource(
+            $this->ai->summarize($data, $request->prompt)
+        );
     }
-
-    section?.addEventListener('mousemove', updateGlow)
-
-    onBeforeUnmount(() => {
-        section?.removeEventListener('mousemove', updateGlow)
-    })
+}`,
+    },
+    {
+        layer: 'Front-end',
+        name: 'ReportChat.vue',
+        code: `<script setup lang="ts">
+const { data: report } = await useFetch('/api/reports', {
+    method: 'POST',
+    body: { prompt },
 })
+<\/script>
+
+<template>
+    <ChatMessage :content="report.summary" />
+    <FinanceChart :series="report.series" />
+</template>`,
+    },
+]
+
+const KEYWORDS = /\b(class|extends|public|function|return|new|const|await|method|body)\b/
+
+function escapeHtml(value: string): string {
+    return value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+}
+
+// Realce simples e estático (conteúdo controlado, sem entrada do usuário)
+function highlight(code: string): string {
+    const pattern = new RegExp(`('[^']*'|"[^"]*")|${KEYWORDS.source}|(</?[\\w-]+)|(\\$\\w+)`, 'g')
+    let html = ''
+    let last = 0
+    for (const match of code.matchAll(pattern)) {
+        html += escapeHtml(code.slice(last, match.index))
+        const [token, str, keyword, tag, variable] = match
+        const cls = str ? 'tk-str' : keyword ? 'tk-key' : tag ? 'tk-tag' : variable ? 'tk-var' : ''
+        html += `<span class="${cls}">${escapeHtml(token)}</span>`
+        last = (match.index ?? 0) + token.length
+    }
+    return html + escapeHtml(code.slice(last))
+}
 </script>
 
 <style scoped>
 .hero {
-    position: relative;
+    background: var(--color-gallery-white);
+    padding: calc(var(--header-height) + 72px) 22px 0;
+    text-align: center;
     overflow: hidden;
-    min-height: 100vh;
-    background: linear-gradient(135deg, #6f00ff 0%, #31007f 100%);
-    color: #f2f2f2;
+}
+
+.hero__text {
+    max-width: 880px;
+    margin: 0 auto;
+}
+
+.hero__lead {
+    font-size: 21px;
+    line-height: 1.38;
+    letter-spacing: 0.011em;
+    color: var(--color-ink);
+    max-width: 680px;
+    margin: 24px auto 0;
+}
+
+.hero__actions {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-top: 36px;
+}
+
+.hero__social {
+    display: flex;
+    justify-content: center;
+    gap: 28px;
+    margin-top: 24px;
+}
+
+.hero__stage {
+    position: relative;
+    max-width: 1040px;
+    margin: 72px auto 0;
+    padding-bottom: 56px;
+}
+
+.editor {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    background: var(--color-studio-mist);
+    border-radius: var(--radius-cards);
+    overflow: hidden;
+    text-align: left;
+}
+
+.editor__pane+.editor__pane {
+    border-left: 1px solid var(--color-control-gray);
+}
+
+.editor__tab {
     display: flex;
     align-items: center;
-    padding: 0 24px;
+    gap: 10px;
+    padding: 18px 28px;
+    border-bottom: 1px solid var(--color-control-gray);
 }
 
-.mouse-glow {
+.editor__layer {
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 16px;
+    letter-spacing: -0.12px;
+    color: var(--color-ink);
+}
+
+.editor__name {
+    font-size: 12px;
+    line-height: 16px;
+    letter-spacing: -0.12px;
+    color: var(--color-slate);
+}
+
+.editor__code {
+    margin: 0;
+    padding: 24px 28px 96px;
+    font-family: ui-monospace, 'SF Mono', 'Cascadia Code', Menlo, Consolas, monospace;
+    font-size: 13px;
+    line-height: 1.7;
+    color: var(--color-ink);
+    overflow-x: auto;
+    white-space: pre;
+}
+
+.editor__code :deep(.tk-key) {
+    color: var(--color-apple-blue);
+}
+
+.editor__code :deep(.tk-str) {
+    color: var(--color-launch-orange);
+}
+
+.editor__code :deep(.tk-tag) {
+    color: var(--color-apple-blue);
+}
+
+.editor__code :deep(.tk-var) {
+    color: var(--color-slate);
+}
+
+.hero__callout {
     position: absolute;
-    top: 0;
-    left: 0;
-    pointer-events: none;
-    width: 100%;
-    height: 100%;
-    background: radial-gradient(circle at center, rgba(255, 255, 255, 0.15), transparent 60%);
-    transition: background-position 0.1s ease;
-    z-index: 0;
-}
-
-.hero>*:not(.mouse-glow) {
-    position: relative;
-    z-index: 1;
-}
-
-.hero-row {
-    gap: 40px;
-}
-
-.hero-image {
-    width: 100%;
-    max-width: 320px;
-    border-radius: 30px;
-    object-fit: cover;
-    transition: transform 0.3s ease;
-    cursor: default;
-}
-
-.hero-image:hover {
-    transform: scale(1.05);
-}
-
-.hero-text {
-    max-width: 600px;
-}
-
-.hero-title {
-    font-weight: 700;
-    font-size: 2.8rem;
-    margin: 0 0 8px 0;
-    letter-spacing: 0.04em;
-}
-
-.hero-subtitle {
-    font-weight: 500;
-    font-size: 1.3rem;
-    color: #bb99ff;
-    margin: 0 0 24px 0;
-}
-
-.hero-description {
-    font-size: 1.05rem;
-    line-height: 1.6;
-    color: #ddd;
-    margin-bottom: 32px;
-}
-
-.hero-buttons {
+    left: 50%;
+    bottom: 28px;
+    transform: translateX(-50%);
     display: flex;
+    align-items: center;
     gap: 20px;
+    padding: 12px 12px 12px 24px;
+    background: var(--color-gallery-white);
+    border-radius: var(--radius-cards);
+    box-shadow: var(--shadow-subtle, 0 0 0 1px #e6e6e8);
+    text-align: left;
+    white-space: nowrap;
 }
 
-.btn-simple {
-    font-size: 1.3rem;
-    color: #f2f2f2;
-    text-decoration: none;
-    padding: 10px 24px;
-    border-radius: 24px;
-    border: 2px solid transparent;
-    transition: all 0.25s ease;
-    cursor: pointer;
+.hero__callout p {
+    margin: 0;
 }
 
-.btn-simple:hover {
-    border-color: #bb99ff;
-    color: #bb99ff;
-    background: rgba(187, 153, 255, 0.15);
-    text-decoration: underline;
+.hero__callout-title {
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.29;
+    letter-spacing: -0.224px;
+    color: var(--color-ink);
 }
 
-.linkedin {
-    color: #0a66c2;
-    border-color: transparent;
+.hero__callout-sub {
+    font-size: 12px;
+    line-height: 1.33;
+    letter-spacing: -0.12px;
+    color: var(--color-slate);
 }
 
-.linkedin:hover {
-    color: black;
-    background: rgba(10, 102, 194, 0.15);
-    border-color: #0a66c2;
-}
-
-.github {
-    color: #fff;
-    border-color: transparent;
-}
-
-.github:hover {
-    color: #ddd;
-    background: rgba(255, 255, 255, 0.15);
-    border-color: #ddd;
-}
-
-@media (max-width: 960px) {
-    .hero-row {
-        gap: 24px;
+@media (max-width: 834px) {
+    .editor {
+        grid-template-columns: 1fr;
     }
 
-    .hero-title {
-        font-size: 2.3rem;
+    .editor__pane+.editor__pane {
+        border-left: 0;
+        border-top: 1px solid var(--color-control-gray);
     }
 
-    .hero-subtitle {
-        font-size: 1.1rem;
+    .editor__code {
+        padding-bottom: 28px;
     }
 
-    .hero-description {
-        font-size: 1rem;
+    .editor__pane:last-child .editor__code {
+        padding-bottom: 96px;
     }
 }
 
-@media (max-width: 600px) {
+@media (max-width: 734px) {
     .hero {
-        min-height: auto;
-        padding: 64px 16px;
+        padding: calc(var(--header-height) + 48px) 16px 0;
     }
 
-    .hero-row {
-        flex-direction: column;
-        align-items: center;
+    .hero__lead {
+        font-size: 19px;
     }
 
-    .hero-image {
-        max-width: 280px;
-        margin-bottom: 32px;
+    .hero__stage {
+        margin-top: 48px;
     }
 
-    .hero-text {
-        text-align: center;
+    .editor__tab,
+    .editor__code {
+        padding-left: 20px;
+        padding-right: 20px;
     }
 
-    .hero-buttons {
-        justify-content: center;
+    .editor__code {
+        font-size: 12px;
+    }
+
+    .hero__callout {
+        left: 16px;
+        right: 16px;
+        bottom: 72px;
+        transform: none;
+        white-space: normal;
+        justify-content: space-between;
     }
 }
 </style>

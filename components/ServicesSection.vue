@@ -1,101 +1,116 @@
 <template>
-    <section class="services" id="services">
-        <v-container class="py-16">
-            <h2 class="text-center mb-10 services-title">Serviços</h2>
-            <v-row>
-                <v-col cols="12" sm="6" md="4" v-for="service in services" :key="service.title">
-                    <v-card class="pa-6 service-card">
-                        <v-icon size="40" color="primary" class="mb-4">{{ service.icon }}</v-icon>
-                        <h3 class="service-title mb-2">{{ service.title }}</h3>
-                        <p class="service-description">{{ service.description }}</p>
-                    </v-card>
-                </v-col>
-            </v-row>
-        </v-container>
+    <section class="gs-section services" id="services">
+        <div class="gs-container">
+            <div class="services__intro">
+                <p class="gs-kicker">Serviços</p>
+                <h2 class="gs-heading">Seu projeto, do papel<br />para a web.</h2>
+                <p class="gs-body gs-body--muted services__lead">
+                    Sites e aplicações com foco em performance, estética e resultado. Do primeiro rascunho ao site no
+                    ar, e depois dele.
+                </p>
+            </div>
+
+            <ul class="services__list">
+                <li v-for="service in services" :key="service.title" class="services__item">
+                    <i :class="['mdi', service.icon]" aria-hidden="true"></i>
+                    <div>
+                        <h3 class="services__title">{{ service.title }}</h3>
+                        <p class="gs-small">{{ service.description }}</p>
+                    </div>
+                </li>
+            </ul>
+
+            <div class="services__cta">
+                <a :href="budgetLink" target="_blank" rel="noopener noreferrer" class="gs-btn gs-btn--primary">
+                    <i class="mdi mdi-whatsapp" aria-hidden="true"></i>
+                    Solicitar orçamento
+                </a>
+                <a href="#contact" class="gs-link">Ou envie uma mensagem</a>
+            </div>
+        </div>
     </section>
 </template>
 
 <script setup lang="ts">
+import { whatsappLink } from '~/utils/whatsapp'
+
+const budgetLink = whatsappLink('Olá! Tenho interesse em um site profissional. Podemos conversar?')
+
 const services = [
-    {
-        icon: 'mdi-web',
-        title: 'Landing Pages',
-        description: 'Páginas de alta conversão para divulgar produtos ou serviços.'
-    },
-    {
-        icon: 'mdi-office-building',
-        title: 'Sites Institucionais',
-        description: 'Sites profissionais para apresentar sua empresa na internet.'
-    },
-    {
-        icon: 'mdi-account-box',
-        title: 'Portfólios Pessoais',
-        description: 'Portfólios personalizados para destacar suas habilidades e trabalhos.'
-    },
-    {
-        icon: 'mdi-newspaper',
-        title: 'Blogs e Conteúdo',
-        description: 'Plataformas para compartilhar notícias, artigos e novidades.'
-    },
-    {
-        icon: 'mdi-tools',
-        title: 'Manutenção de Sites',
-        description: 'Atualizações e suporte técnico para manter seu site no ar.'
-    },
-    {
-        icon: 'mdi-cellphone-link',
-        title: 'Design Responsivo',
-        description: 'Layouts que se adaptam perfeitamente a qualquer dispositivo.'
-    },
-    {
-        icon: 'mdi-lightbulb-on',
-        title: 'Consultoria Digital',
-        description: 'Estratégias para fortalecer sua marca e presença online.'
-    }
+    { icon: 'mdi-web', title: 'Landing pages', description: 'Páginas de alta conversão para divulgar produtos ou serviços.' },
+    { icon: 'mdi-office-building-outline', title: 'Sites institucionais', description: 'Presença profissional para apresentar sua empresa na internet.' },
+    { icon: 'mdi-application-outline', title: 'Aplicações web', description: 'Interfaces e painéis com Vue, Nuxt ou React, prontos para escalar.' },
+    { icon: 'mdi-account-box-outline', title: 'Portfólios', description: 'Portfólios pessoais que destacam suas habilidades e trabalhos.' },
+    { icon: 'mdi-tools', title: 'Manutenção', description: 'Atualizações, melhorias e suporte para manter seu site no ar.' },
+    { icon: 'mdi-lightbulb-on-outline', title: 'Consultoria', description: 'Revisão de front-end, performance e estratégia de presença online.' },
 ]
 </script>
 
 <style scoped>
 .services {
-    background: #f9f9f9;
-    color: #191919;
+    background: var(--color-gallery-white);
 }
 
-.services-title {
-    font-size: 2.5rem;
-    font-weight: 700;
-    position: relative;
+.services__intro {
+    max-width: 720px;
 }
 
-.services-title::after {
-    content: '';
-    width: 60px;
-    height: 4px;
-    background: #6f00ff;
-    display: block;
-    margin: 12px auto 0;
-    border-radius: 2px;
+.services__lead {
+    margin-top: 20px;
 }
 
-.service-card {
-    border-radius: 16px;
-    box-shadow: 0 4px 12px rgba(25, 25, 25, 0.1);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    background: white;
+.services__list {
+    list-style: none;
+    margin: 56px 0 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    column-gap: 40px;
 }
 
-.service-card:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 6px 16px rgba(25, 25, 25, 0.2);
+.services__item {
+    display: flex;
+    gap: 16px;
+    padding: 24px 0;
+    border-top: 1px solid var(--color-hairline-silver);
 }
 
-.service-title {
-    font-size: 1.25rem;
+.services__item .mdi {
+    font-size: 24px;
+    line-height: 1;
+    color: var(--color-ink);
+}
+
+.services__title {
+    font-size: 17px;
     font-weight: 600;
+    line-height: 1.24;
+    letter-spacing: -0.374px;
+    color: var(--color-ink);
+    margin: 0 0 6px;
 }
 
-.service-description {
-    font-size: 0.95rem;
-    color: #555;
+.services__cta {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 24px;
+    margin-top: 48px;
+}
+
+@media (max-width: 834px) {
+    .services__list {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 560px) {
+    .services__list {
+        grid-template-columns: 1fr;
+    }
+
+    .services__intro br {
+        display: none;
+    }
 }
 </style>

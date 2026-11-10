@@ -11,11 +11,11 @@ export default defineNuxtPlugin((app) => {
       themes: {
         light: {
           colors: {
-            primary: '#6f00ff',
-            secondary: '#31007f',
-            background: '#f2f2f2',
+            primary: '#0071e3',
+            secondary: '#0066cc',
+            background: '#ffffff',
             surface: '#ffffff',
-            dark: '#191919'
+            dark: '#1d1d1f'
           }
         }
       }

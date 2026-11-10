@@ -5,7 +5,7 @@ export function useContactForm(endpoint: string) {
   const error = ref<string | null>(null)
   const success = ref(false)
 
-  async function sendContactForm(data: { name: string; email: string; message: string }) {
+  async function sendContactForm(data: Record<string, string>) {
     loading.value = true
     error.value = null
     success.value = false
