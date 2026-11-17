@@ -7,15 +7,17 @@ import { createVuetify } from 'vuetify'
 export default defineNuxtPlugin((app) => {
   const vuetify = createVuetify({
     theme: {
-      defaultTheme: 'light',
+      defaultTheme: 'portfolio',
       themes: {
-        light: {
+        portfolio: {
+          dark: true,
           colors: {
-            primary: '#0071e3',
-            secondary: '#0066cc',
-            background: '#ffffff',
-            surface: '#ffffff',
-            dark: '#1d1d1f'
+            primary: '#6f00ff',
+            secondary: '#31007f',
+            accent: '#bb99ff',
+            background: '#191919',
+            surface: '#202020',
+            dark: '#191919'
           }
         }
       }

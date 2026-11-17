@@ -1,19 +1,38 @@
 <template>
-    <section class="gs-section gs-section--mist" id="stack">
+    <section class="gs-section gs-section--deep stack" id="stack">
         <div class="gs-container">
-            <div class="gs-section-header">
-                <h2 class="gs-heading">Stack.</h2>
+            <div class="gs-section-header" v-reveal>
+                <div>
+                    <p class="gs-kicker">02. stack</p>
+                    <h2 class="gs-heading">Ferramentas do dia a dia.</h2>
+                    <p class="gs-body gs-body--muted gs-section-header__lead">
+                        Do banco de dados à interface, com qualidade e IA em todas as camadas.
+                    </p>
+                </div>
                 <a href="https://github.com/gabriel-santosdev" target="_blank" rel="noopener noreferrer"
                     class="gs-link">Ver código no GitHub</a>
             </div>
+        </div>
 
-            <div class="skills__grid">
-                <article v-for="group in groups" :key="group.title" class="gs-card skills__card">
-                    <i :class="['mdi', group.icon, 'skills__icon']" aria-hidden="true"></i>
+        <!-- Faixa rolante com as tecnologias -->
+        <div class="marquee" aria-hidden="true">
+            <div class="marquee__track">
+                <span v-for="(tech, i) in [...marquee, ...marquee]" :key="i" class="marquee__item">{{ tech }}</span>
+            </div>
+        </div>
+
+        <div class="gs-container">
+            <div class="stack__grid">
+                <article v-for="(group, i) in groups" :key="group.title" v-reveal="(i % 3) * 80"
+                    class="gs-card gs-card--interactive stack__card" @pointermove="spotlight">
+                    <div class="stack__card-head">
+                        <span class="stack__icon"><i :class="['mdi', group.icon]" aria-hidden="true"></i></span>
+                        <span class="stack__file">{{ group.file }}</span>
+                    </div>
                     <h3 class="gs-feature-heading">{{ group.title }}</h3>
-                    <p class="gs-small skills__desc">{{ group.description }}</p>
-                    <ul class="skills__list">
-                        <li v-for="item in group.items" :key="item">{{ item }}</li>
+                    <p class="gs-small stack__desc">{{ group.description }}</p>
+                    <ul class="stack__list">
+                        <li v-for="item in group.items" :key="item" class="gs-tag">{{ item }}</li>
                     </ul>
                 </article>
             </div>
@@ -22,95 +41,161 @@
 </template>
 
 <script setup lang="ts">
-const groups = [
-    {
-        title: 'Linguagens',
-        icon: 'mdi-code-tags',
-        description: 'A base de toda interface web.',
-        items: ['TypeScript', 'JavaScript', 'PHP', 'SQL', 'HTML', 'CSS'],
-    },
-    {
-        title: 'Back-end e arquitetura',
-        icon: 'mdi-server-outline',
-        description: 'APIs, regras de negócio e integração entre serviços.',
-        items: ['PHP e Laravel', 'Node.js (BFF)', 'APIs REST', 'SQL e modelagem de dados', 'Micro Frontends', 'GCP'],
-    },
-    {
-        title: 'Front-end',
-        icon: 'mdi-layers-outline',
-        description: 'Aplicações reativas, SSR, SSG e PWA.',
-        items: ['Vue.js 2 e 3', 'Nuxt', 'React', 'Next.js', 'Angular'],
-    },
-    {
-        title: 'UI e Design Systems',
-        icon: 'mdi-palette-outline',
-        description: 'Componentes consistentes, documentados e escaláveis.',
-        items: ['Storybook', 'SCSS', 'Material-UI', 'Vuetify', 'i18n', 'HubSpot / HubL'],
-    },
-    {
-        title: 'Qualidade',
-        icon: 'mdi-check-decagram-outline',
-        description: 'Código confiável do primeiro commit ao deploy.',
-        items: ['Jest', 'Vitest', 'Cypress (E2E)', 'Code review', 'Clean Code', 'Performance'],
-    },
-    {
-        title: 'Inteligência Artificial',
-        icon: 'mdi-creation-outline',
-        description: 'IA aplicada a produtos reais.',
-        items: ['MCP (Model Context Protocol)', 'Chat com IA', 'Relatórios com IA'],
-    },
-]
+import { marqueeTechs as marquee, stackGroups as groups } from '~/data/portfolio'
+
+// Spotlight roxo que acompanha o cursor dentro do card
+function spotlight(e: PointerEvent) {
+    const el = e.currentTarget as HTMLElement
+    const rect = el.getBoundingClientRect()
+    el.style.setProperty('--spot-x', `${e.clientX - rect.left}px`)
+    el.style.setProperty('--spot-y', `${e.clientY - rect.top}px`)
+}
 </script>
 
 <style scoped>
-.skills__grid {
+.stack {
+    overflow: hidden;
+}
+
+/* ---------- Faixa rolante ---------- */
+.marquee {
+    position: relative;
+    margin: 0 0 56px;
+    overflow: hidden;
+    border-block: 1px solid var(--color-border);
+    padding: 18px 0;
+    mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
+}
+
+.marquee__track {
+    display: flex;
+    width: max-content;
+    animation: marquee 48s linear infinite;
+}
+
+.marquee__item {
+    font-family: var(--font-display);
+    font-size: 22px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    color: var(--color-subtle);
+    padding: 0 28px;
+    white-space: nowrap;
+}
+
+.marquee__item::after {
+    content: '✦';
+    font-size: 12px;
+    color: var(--color-primary);
+    margin-left: 56px;
+    vertical-align: middle;
+}
+
+@keyframes marquee {
+    to {
+        transform: translateX(-50%);
+    }
+}
+
+/* ---------- Cards ---------- */
+.stack__grid {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: var(--element-gap);
 }
 
-.skills__card {
-    padding: 40px;
+.stack__card {
+    --spot-x: 50%;
+    --spot-y: 0%;
+    display: flex;
+    flex-direction: column;
+    padding: 28px;
 }
 
-.skills__icon {
-    display: block;
-    font-size: 32px;
-    line-height: 1;
-    color: var(--color-ink);
-    margin-bottom: 20px;
+.stack__card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(360px circle at var(--spot-x) var(--spot-y), rgba(111, 0, 255, 0.14), transparent 60%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
 }
 
-.skills__desc {
+.stack__card:hover::before {
+    opacity: 1;
+}
+
+.stack__card>* {
+    position: relative;
+}
+
+.stack__card-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+}
+
+.stack__icon {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    font-size: 22px;
+    color: var(--color-accent);
+    background: var(--color-accent-soft);
+    border: 1px solid rgba(187, 153, 255, 0.18);
+    border-radius: var(--radius-md);
+}
+
+.stack__file {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--color-subtle);
+}
+
+.stack__desc {
     margin-top: 8px;
 }
 
-.skills__list {
+.stack__list {
     list-style: none;
-    margin: 28px 0 0;
+    margin: 24px 0 0;
     padding: 0;
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
 }
 
-.skills__list li {
-    font-size: 14px;
-    line-height: 1.29;
-    letter-spacing: -0.224px;
-    color: var(--color-ink);
-    padding: 8px 14px;
-    border-radius: var(--radius-buttons);
-    box-shadow: inset 0 0 0 1px var(--color-hairline-silver);
+@media (max-width: 1024px) {
+    .stack__grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
 }
 
-@media (max-width: 734px) {
-    .skills__grid {
+@media (max-width: 640px) {
+    .stack__grid {
         grid-template-columns: 1fr;
     }
 
-    .skills__card {
+    .stack__card {
         padding: var(--card-padding);
+    }
+
+    .marquee {
+        margin-bottom: 40px;
+    }
+
+    .marquee__item {
+        font-size: 18px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .marquee__track {
+        animation: none;
     }
 }
 </style>

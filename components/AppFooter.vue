@@ -1,15 +1,31 @@
 <template>
     <footer class="footer">
-        <div class="gs-container footer__inner">
+        <div class="gs-container--wide footer__inner">
+            <div class="footer__brand">
+                <img src="/logo-gs.png" alt="Gabriel Santos" width="2712" height="724" class="footer__logo" />
+                <p class="footer__tagline">Software Engineer Full Stack</p>
+            </div>
+
             <nav class="footer__links" aria-label="Rodapé">
-                <a href="#cv">Sobre</a>
-                <a href="#projects">Projetos</a>
-                <a href="#ai-skills">Skills para IA</a>
-                <a href="#services">Serviços</a>
-                <a href="#contact">Contato</a>
+                <a href="#cv">sobre</a>
+                <a href="#stack">stack</a>
+                <a href="#projects">projetos</a>
+                <a href="#services">serviços</a>
+                <a href="#contact">contato</a>
             </nav>
-            <p class="footer__copy">
-                &copy; {{ currentYear }} gabrielsantos.tec. Todos os direitos reservados.
+
+            <div class="footer__social">
+                <a href="https://github.com/gabriel-santosdev" target="_blank" rel="noopener noreferrer"
+                    aria-label="GitHub"><i class="mdi mdi-github" aria-hidden="true"></i></a>
+                <a href="https://linkedin.com/in/devgabrielsantos" target="_blank" rel="noopener noreferrer"
+                    aria-label="LinkedIn"><i class="mdi mdi-linkedin" aria-hidden="true"></i></a>
+            </div>
+        </div>
+
+        <div class="gs-container--wide footer__bottom">
+            <p>&copy; {{ currentYear }} gabrielsantos.tec</p>
+            <p>Feito com <span class="footer__accent">Nuxt</span> + <span class="footer__accent">Vue</span> ·
+                <a href="#hero" class="footer__top">voltar ao topo ↑</a>
             </p>
         </div>
     </footer>
@@ -21,44 +37,111 @@ const currentYear = new Date().getFullYear()
 
 <style scoped>
 .footer {
-    background: var(--color-studio-mist);
-    padding: 0 22px 32px;
+    position: relative;
+    background: var(--color-bg-deep);
+    border-top: 1px solid var(--color-border);
+    padding: 56px 24px 28px;
 }
 
 .footer__inner {
-    border-top: 1px solid var(--color-hairline-silver);
-    padding-top: 20px;
     display: flex;
-    justify-content: space-between;
     align-items: center;
+    justify-content: space-between;
     flex-wrap: wrap;
-    gap: 12px 24px;
+    gap: 28px 40px;
+    padding-bottom: 32px;
+    border-bottom: 1px solid var(--color-border);
+}
+
+.footer__logo {
+    height: 22px;
+    width: auto;
+}
+
+.footer__tagline {
+    margin: 10px 0 0;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--color-subtle);
 }
 
 .footer__links {
     display: flex;
     flex-wrap: wrap;
-    gap: 8px 20px;
+    gap: 8px 24px;
 }
 
-.footer__links a,
-.footer__copy {
-    font-size: 12px;
-    line-height: 1.33;
-    letter-spacing: -0.12px;
-    color: var(--color-slate);
+.footer__links a {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    color: var(--color-muted);
     text-decoration: none;
-    margin: 0;
+    transition: color 0.2s ease;
 }
 
 .footer__links a:hover {
-    color: var(--color-ink);
-    text-decoration: underline;
+    color: var(--color-accent);
+}
+
+.footer__social {
+    display: flex;
+    gap: 8px;
+}
+
+.footer__social a {
+    display: grid;
+    place-items: center;
+    width: 38px;
+    height: 38px;
+    font-size: 19px;
+    color: var(--color-muted);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    text-decoration: none;
+    transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+.footer__social a:hover {
+    color: var(--color-accent);
+    border-color: rgba(187, 153, 255, 0.4);
+}
+
+.footer__bottom {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px 24px;
+    padding-top: 20px;
+}
+
+.footer__bottom p {
+    margin: 0;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--color-subtle);
+}
+
+.footer__accent {
+    color: var(--color-accent);
+}
+
+.footer__top {
+    color: var(--color-muted);
+    text-decoration: none;
+}
+
+.footer__top:hover {
+    color: var(--color-text);
 }
 
 @media (max-width: 734px) {
     .footer {
-        padding: 0 16px 24px;
+        padding: 48px 16px 24px;
+    }
+
+    .footer__inner {
+        flex-direction: column;
+        align-items: flex-start;
     }
 }
 </style>

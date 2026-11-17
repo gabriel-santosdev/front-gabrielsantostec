@@ -1,26 +1,30 @@
 <template>
-    <section class="gs-section services" id="services">
+    <section class="gs-section gs-section--deep services" id="services">
         <div class="gs-container">
-            <div class="services__intro">
-                <p class="gs-kicker">Serviços</p>
-                <h2 class="gs-heading">Seu projeto, do papel<br />para a web.</h2>
-                <p class="gs-body gs-body--muted services__lead">
-                    Sites e aplicações com foco em performance, estética e resultado. Do primeiro rascunho ao site no
-                    ar, e depois dele.
-                </p>
+            <div class="gs-section-header" v-reveal>
+                <div>
+                    <p class="gs-kicker">04. serviços</p>
+                    <h2 class="gs-heading">Seu projeto, do papel<br />para a web.</h2>
+                    <p class="gs-body gs-body--muted gs-section-header__lead">
+                        Sites e aplicações com foco em performance, estética e resultado. Do primeiro rascunho ao site
+                        no ar, e depois dele.
+                    </p>
+                </div>
             </div>
 
-            <ul class="services__list">
-                <li v-for="service in services" :key="service.title" class="services__item">
-                    <i :class="['mdi', service.icon]" aria-hidden="true"></i>
-                    <div>
-                        <h3 class="services__title">{{ service.title }}</h3>
-                        <p class="gs-small">{{ service.description }}</p>
+            <ul class="services__grid">
+                <li v-for="(service, i) in services" :key="service.title" v-reveal="(i % 3) * 80"
+                    class="services__item">
+                    <div class="services__head">
+                        <i :class="['mdi', service.icon]" aria-hidden="true"></i>
+                        <span class="services__index">{{ String(i + 1).padStart(2, '0') }}</span>
                     </div>
+                    <h3 class="services__title">{{ service.title }}</h3>
+                    <p class="gs-small">{{ service.description }}</p>
                 </li>
             </ul>
 
-            <div class="services__cta">
+            <div class="services__cta" v-reveal>
                 <a :href="budgetLink" target="_blank" rel="noopener noreferrer" class="gs-btn gs-btn--primary">
                     <i class="mdi mdi-whatsapp" aria-hidden="true"></i>
                     Solicitar orçamento
@@ -47,47 +51,74 @@ const services = [
 </script>
 
 <style scoped>
-.services {
-    background: var(--color-gallery-white);
-}
-
-.services__intro {
-    max-width: 720px;
-}
-
-.services__lead {
-    margin-top: 20px;
-}
-
-.services__list {
+.services__grid {
     list-style: none;
-    margin: 56px 0 0;
+    margin: 0;
     padding: 0;
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
-    column-gap: 40px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    background: var(--color-border);
+    gap: 1px;
 }
 
 .services__item {
-    display: flex;
-    gap: 16px;
-    padding: 24px 0;
-    border-top: 1px solid var(--color-hairline-silver);
+    position: relative;
+    padding: 32px;
+    background: var(--color-bg-deep);
+    transition: background-color 0.3s ease;
 }
 
-.services__item .mdi {
-    font-size: 24px;
+.services__item::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 2px;
+    background: var(--gradient-brand);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.4s var(--ease-out);
+}
+
+.services__item:hover {
+    background: var(--color-surface);
+}
+
+.services__item:hover::after {
+    transform: scaleX(1);
+}
+
+.services__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 28px;
+}
+
+.services__head .mdi {
+    font-size: 26px;
     line-height: 1;
-    color: var(--color-ink);
+    color: var(--color-accent);
+}
+
+.services__index {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--color-subtle);
 }
 
 .services__title {
-    font-size: 17px;
+    font-family: var(--font-display);
+    font-size: 20px;
     font-weight: 600;
-    line-height: 1.24;
-    letter-spacing: -0.374px;
-    color: var(--color-ink);
-    margin: 0 0 6px;
+    letter-spacing: -0.015em;
+    line-height: 1.25;
+    color: var(--color-text);
+    margin: 0 0 8px;
 }
 
 .services__cta {
@@ -99,17 +130,21 @@ const services = [
 }
 
 @media (max-width: 834px) {
-    .services__list {
+    .services__grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 }
 
 @media (max-width: 560px) {
-    .services__list {
+    .services__grid {
         grid-template-columns: 1fr;
     }
 
-    .services__intro br {
+    .services__item {
+        padding: 24px;
+    }
+
+    .gs-heading br {
         display: none;
     }
 }
