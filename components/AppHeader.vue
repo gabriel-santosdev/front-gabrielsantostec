@@ -1,7 +1,7 @@
 <template>
     <header class="nav" :class="{ 'is-scrolled': scrolled, 'is-open': menuOpen }">
-        <nav class="nav__inner" aria-label="Navegação principal">
-            <a href="#hero" class="nav__logo" aria-label="Gabriel Santos, início" @click="menuOpen = false">
+        <nav class="nav__inner" :aria-label="t('nav.label')">
+            <a href="#hero" class="nav__logo" :aria-label="t('nav.home')" @click="menuOpen = false">
                 <img src="/logo-gs.png" alt="" width="2712" height="724" />
             </a>
 
@@ -15,9 +15,10 @@
             </ul>
 
             <div class="nav__actions">
-                <a href="#contact" class="gs-btn gs-btn--primary gs-btn--sm nav__cta">Fale comigo</a>
+                <LangSwitch class="nav__lang" />
+                <a href="#contact" class="gs-btn gs-btn--primary gs-btn--sm nav__cta">{{ t('nav.cta') }}</a>
                 <button class="nav__toggle" type="button" :aria-expanded="menuOpen" aria-controls="mobile-menu"
-                    :aria-label="menuOpen ? 'Fechar menu' : 'Abrir menu'" @click="menuOpen = !menuOpen">
+                    :aria-label="menuOpen ? t('nav.closeMenu') : t('nav.openMenu')" @click="menuOpen = !menuOpen">
                     <span></span>
                     <span></span>
                 </button>
@@ -31,26 +32,29 @@
                 </a>
             </li>
             <li class="nav__mobile-cta">
-                <a href="#contact" class="gs-btn gs-btn--primary" @click="menuOpen = false">Fale comigo</a>
+                <LangSwitch />
+                <a href="#contact" class="gs-btn gs-btn--primary" @click="menuOpen = false">{{ t('nav.cta') }}</a>
             </li>
         </ul>
     </header>
 </template>
 
 <script setup lang="ts">
-import { onBeforeUnmount, onMounted, ref } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
+
+const { t } = useI18n()
 
 const menuOpen = ref(false)
 const scrolled = ref(false)
 const active = ref('')
 
-const navItems = [
-    { label: 'sobre', href: '#cv' },
-    { label: 'stack', href: '#stack' },
-    { label: 'projetos', href: '#projects' },
-    { label: 'serviços', href: '#services' },
-    { label: 'contato', href: '#contact' },
-]
+const navItems = computed(() => [
+    { label: t('nav.about'), href: '#cv' },
+    { label: t('nav.stack'), href: '#stack' },
+    { label: t('nav.projects'), href: '#projects' },
+    { label: t('nav.services'), href: '#services' },
+    { label: t('nav.contact'), href: '#contact' },
+])
 
 let observer: IntersectionObserver | null = null
 
@@ -71,7 +75,7 @@ onMounted(() => {
         },
         { rootMargin: '-45% 0px -50% 0px' }
     )
-    for (const item of navItems) {
+    for (const item of navItems.value) {
         const el = document.querySelector(item.href)
         if (el) observer.observe(el)
     }
@@ -242,11 +246,13 @@ onBeforeUnmount(() => {
 }
 
 .nav__mobile-cta {
+    display: flex;
+    gap: 12px;
     margin-top: 28px;
 }
 
 .nav__mobile-cta .gs-btn {
-    width: 100%;
+    flex: 1;
 }
 
 @media (max-width: 1080px) {
@@ -264,7 +270,8 @@ onBeforeUnmount(() => {
         padding: 0 16px;
     }
 
-    .nav__cta {
+    .nav__cta,
+    .nav__lang {
         display: none;
     }
 }

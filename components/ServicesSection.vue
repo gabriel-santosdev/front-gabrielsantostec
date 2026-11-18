@@ -3,17 +3,14 @@
         <div class="gs-container">
             <div class="gs-section-header" v-reveal>
                 <div>
-                    <p class="gs-kicker">04. serviços</p>
-                    <h2 class="gs-heading">Seu projeto, do papel<br />para a web.</h2>
-                    <p class="gs-body gs-body--muted gs-section-header__lead">
-                        Sites e aplicações com foco em performance, estética e resultado. Do primeiro rascunho ao site
-                        no ar, e depois dele.
-                    </p>
+                    <p class="gs-kicker">{{ t('services.kicker') }}</p>
+                    <h2 class="gs-heading">{{ t('services.title') }}<br />{{ t('services.titleEnd') }}</h2>
+                    <p class="gs-body gs-body--muted gs-section-header__lead">{{ t('services.lead') }}</p>
                 </div>
             </div>
 
             <ul class="services__grid">
-                <li v-for="(service, i) in services" :key="service.title" v-reveal="(i % 3) * 80"
+                <li v-for="(service, i) in portfolio.services" :key="service.title" v-reveal="(i % 3) * 80"
                     class="services__item">
                     <div class="services__head">
                         <i :class="['mdi', service.icon]" aria-hidden="true"></i>
@@ -27,27 +24,22 @@
             <div class="services__cta" v-reveal>
                 <a :href="budgetLink" target="_blank" rel="noopener noreferrer" class="gs-btn gs-btn--primary">
                     <i class="mdi mdi-whatsapp" aria-hidden="true"></i>
-                    Solicitar orçamento
+                    {{ t('services.budget') }}
                 </a>
-                <a href="#contact" class="gs-link">Ou envie uma mensagem</a>
+                <a href="#contact" class="gs-link">{{ t('services.orMessage') }}</a>
             </div>
         </div>
     </section>
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
 import { whatsappLink } from '~/utils/whatsapp'
 
-const budgetLink = whatsappLink('Olá! Tenho interesse em um site profissional. Podemos conversar?')
+const { t } = useI18n()
+const portfolio = usePortfolio()
 
-const services = [
-    { icon: 'mdi-web', title: 'Landing pages', description: 'Páginas de alta conversão para divulgar produtos ou serviços.' },
-    { icon: 'mdi-office-building-outline', title: 'Sites institucionais', description: 'Presença profissional para apresentar sua empresa na internet.' },
-    { icon: 'mdi-application-outline', title: 'Aplicações web', description: 'Interfaces e painéis com Vue, Nuxt ou React, prontos para escalar.' },
-    { icon: 'mdi-account-box-outline', title: 'Portfólios', description: 'Portfólios pessoais que destacam suas habilidades e trabalhos.' },
-    { icon: 'mdi-tools', title: 'Manutenção', description: 'Atualizações, melhorias e suporte para manter seu site no ar.' },
-    { icon: 'mdi-lightbulb-on-outline', title: 'Consultoria', description: 'Revisão de front-end, performance e estratégia de presença online.' },
-]
+const budgetLink = computed(() => whatsappLink(t('services.budgetMessage')))
 </script>
 
 <style scoped>

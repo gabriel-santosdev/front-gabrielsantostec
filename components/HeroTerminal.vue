@@ -6,7 +6,7 @@
             <span class="term__badge"><i class="mdi mdi-creation" aria-hidden="true"></i> IA</span>
         </div>
 
-        <div ref="bodyRef" class="term__body" role="log" aria-live="polite" aria-label="Terminal interativo">
+        <div ref="bodyRef" class="term__body" role="log" aria-live="polite" :aria-label="t('terminal.label')">
             <template v-for="line in lines" :key="line.id">
                 <p v-if="line.kind === 'cmd'" class="term__line">
                     <span class="term__prompt">{{ PROMPT }}</span>{{ line.text }}
@@ -38,7 +38,8 @@
 
                 <p v-else-if="line.kind === 'ai'" class="term__line term__ai">
                     <span class="term__ai-tag">ia ›</span>
-                    <span v-if="!line.text && line.streaming" class="term__thinking">pensando<span>.</span><span>.</span><span>.</span></span>
+                    <span v-if="!line.text && line.streaming" class="term__thinking">{{ t('terminal.thinking')
+                        }}<span>.</span><span>.</span><span>.</span></span>
                     {{ line.text }}<span v-if="line.streaming && line.text" class="term__caret"></span>
                 </p>
             </template>
@@ -47,13 +48,13 @@
                 <label for="term-input" class="term__prompt">{{ PROMPT }}</label>
                 <input id="term-input" ref="inputRef" v-model="input" class="term__input" type="text"
                     autocomplete="off" autocapitalize="off" spellcheck="false" maxlength="500" :disabled="busy"
-                    :placeholder="busy ? '' : 'digite help ou pergunte algo'" aria-label="Comando ou pergunta"
+                    :placeholder="busy ? '' : t('terminal.placeholder')" :aria-label="t('terminal.inputLabel')"
                     @keydown.up.prevent="historyNav(-1)" @keydown.down.prevent="historyNav(1)" />
             </form>
         </div>
 
-        <div class="term__chips" aria-label="Sugestões">
-            <button v-for="chip in chips" :key="chip.cmd" type="button" class="term__chip"
+        <div class="term__chips" :aria-label="t('terminal.suggestions')">
+            <button v-for="chip in chips" :key="chip.label" type="button" class="term__chip"
                 :class="{ 'term__chip--ai': chip.ai }" :disabled="busy" @click.stop="run(chip.cmd)">
                 <i v-if="chip.ai" class="mdi mdi-creation" aria-hidden="true"></i>{{ chip.label }}
             </button>
@@ -62,13 +63,15 @@
 </template>
 
 <script setup lang="ts">
-import { nextTick, onMounted, ref } from 'vue'
+import { computed, nextTick, onMounted, ref, watch } from 'vue'
 import { codeSamples } from '~/data/codeSamples'
-import { experience, projects, stackGroups } from '~/data/portfolio'
 import { highlight } from '~/utils/highlight'
 import { whatsappLink } from '~/utils/whatsapp'
 
 const PROMPT = 'gabriel@portfolio:~$ '
+
+const { t, locale } = useI18n()
+const portfolio = usePortfolio()
 
 interface ListItem {
     label: string
@@ -95,17 +98,16 @@ const typed: string[] = []
 let historyIndex = 0
 const conversation: { role: 'user' | 'assistant'; content: string }[] = []
 
-const chips = [
+const chips = computed(() => [
     { label: 'help', cmd: 'help' },
-    { label: 'projetos', cmd: 'projetos' },
+    { label: 'projects', cmd: 'projects' },
     { label: 'cat ReportController.php', cmd: 'cat ReportController.php' },
-    { label: 'Ele já trabalhou com React?', cmd: 'Ele já trabalhou com React?', ai: true },
-    { label: 'Por que contratar o Gabriel?', cmd: 'Por que eu deveria contratar o Gabriel?', ai: true },
-]
+    { label: t('terminal.chips.react'), cmd: t('terminal.chips.react'), ai: true },
+    { label: t('terminal.chips.hire'), cmd: t('terminal.chips.hireQuestion'), ai: true },
+])
 
 function push(line: NewLine): Line {
-    const full = { ...line, id: nextId++ } as Line
-    lines.value.push(full)
+    lines.value.push({ ...line, id: nextId++ } as Line)
     scrollToEnd()
     return lines.value[lines.value.length - 1]
 }
@@ -123,118 +125,113 @@ function focusInput() {
     inputRef.value?.focus({ preventScroll: true })
 }
 
-/* ---------- Comandos ---------- */
-const commands: Record<string, { desc: string; run: (arg: string) => void }> = {
+/* ---------- Comandos ----------
+ * Os nomes dos comandos são em inglês (padrão de terminal) e valem em todos os idiomas;
+ * os apelidos abaixo aceitam as versões em português e espanhol. */
+const commands: Record<string, { hidden?: boolean; run: (arg: string) => void }> = {
     help: {
-        desc: 'lista os comandos',
         run: () =>
             push({
                 kind: 'list',
                 items: Object.entries(commands)
-                    .filter(([name]) => !hiddenCommands.has(name))
-                    .map(([name, c]) => ({ label: name, desc: c.desc }))
-                    .concat({ label: '<pergunta>', desc: 'qualquer outra coisa vai para a IA' }),
+                    .filter(([, c]) => !c.hidden)
+                    .map(([name]) => ({ label: name, desc: t(`terminal.commands.${name}`) }))
+                    .concat({ label: t('terminal.anyQuestion'), desc: t('terminal.anyQuestionDesc') }),
             }),
     },
     whoami: {
-        desc: 'quem é o Gabriel',
-        run: () =>
-            push({
-                kind: 'out',
-                text: 'Gabriel Santos, Software Engineer Full Stack. 4+ anos construindo produtos web do banco de dados à interface: Laravel e Node.js no back-end, Vue, React e Angular no front-end, e IA aplicada a produtos reais.',
-            }),
+        run: () => push({ kind: 'out', text: t('terminal.whoami') }),
     },
-    experiencia: {
-        desc: 'empresas e cargos',
+    experience: {
         run: () =>
             push({
                 kind: 'list',
-                items: experience.flatMap((job) =>
+                items: portfolio.value.experience.flatMap((job) =>
                     job.roles.map((role) => ({ label: job.company, desc: `${role.title} · ${role.period}` }))
                 ),
             }),
     },
     stack: {
-        desc: 'tecnologias por área',
         run: () =>
             push({
                 kind: 'list',
-                items: stackGroups.map((g) => ({ label: g.title, desc: g.items.join(', ') })),
+                items: portfolio.value.stackGroups.map((g) => ({ label: g.title, desc: g.items.join(', ') })),
             }),
     },
-    projetos: {
-        desc: 'sites e apps no ar',
+    projects: {
         run: () =>
             push({
                 kind: 'list',
-                items: projects.map((p) => ({ label: p.title, desc: p.type, href: p.live })),
+                items: portfolio.value.projects.map((p) => ({ label: p.title, desc: p.type, href: p.live })),
             }),
     },
     ls: {
-        desc: 'arquivos de código de exemplo',
         run: () =>
             push({
                 kind: 'list',
-                items: codeSamples.map((s) => ({ label: s.name, desc: s.description })),
+                items: codeSamples.map((s) => ({ label: s.name, desc: t(`terminal.files.${s.key}`) })),
             }),
     },
     cat: {
-        desc: 'mostra um arquivo (ex.: cat ReportChat.vue)',
         run: (arg) => {
             const sample = codeSamples.find((s) => s.name.toLowerCase() === arg.toLowerCase())
             if (!sample) {
                 push({
                     kind: 'error',
-                    text: arg ? `cat: ${arg}: arquivo não encontrado. Use ls para ver os arquivos.` : 'uso: cat <arquivo>',
+                    text: arg ? t('terminal.fileNotFound', { file: arg }) : t('terminal.catUsage'),
                 })
                 return
             }
             push({ kind: 'code', file: sample.name, layer: sample.layer, html: highlight(sample.code) })
         },
     },
-    contato: {
-        desc: 'como falar com o Gabriel',
+    contact: {
         run: () =>
             push({
                 kind: 'list',
                 items: [
-                    { label: 'formulário', desc: 'seção de contato desta página', href: '#contact' },
-                    { label: 'whatsapp', desc: 'resposta rápida', href: whatsappLink('Olá, Gabriel! Vim pelo terminal do seu site.') },
+                    { label: 'form', desc: t('terminal.contact.form'), href: '#contact' },
+                    { label: 'whatsapp', desc: t('terminal.contact.whatsapp'), href: whatsappLink(t('terminal.contact.whatsappMessage')) },
                     { label: 'linkedin', desc: 'in/devgabrielsantos', href: 'https://linkedin.com/in/devgabrielsantos' },
                     { label: 'github', desc: 'gabriel-santosdev', href: 'https://github.com/gabriel-santosdev' },
                 ],
             }),
     },
     clear: {
-        desc: 'limpa o terminal',
         run: () => {
             lines.value = []
         },
     },
     sudo: {
-        desc: '',
+        hidden: true,
         run: (arg) => {
             if (/hire|contratar/i.test(arg)) {
-                push({ kind: 'out', text: 'Permissão concedida. Abrindo o contato…' })
+                push({ kind: 'out', text: t('terminal.sudoOk') })
                 setTimeout(() => document.querySelector('#contact')?.scrollIntoView({ behavior: 'smooth' }), 600)
             } else {
-                push({ kind: 'error', text: 'Boa tentativa. Experimente: sudo hire gabriel' })
+                push({ kind: 'error', text: t('terminal.sudoNo') })
             }
         },
     },
 }
 
 const aliases: Record<string, string> = {
+    '?': 'help',
+    ajuda: 'help',
+    ayuda: 'help',
     sobre: 'whoami',
     about: 'whoami',
-    experiência: 'experiencia',
-    exp: 'experiencia',
-    projects: 'projetos',
+    experiencia: 'experience',
+    experiência: 'experience',
+    exp: 'experience',
+    projetos: 'projects',
+    proyectos: 'projects',
     code: 'ls',
-    contact: 'contato',
-    '?': 'help',
+    contato: 'contact',
+    contacto: 'contact',
+    limpar: 'clear',
+    limpiar: 'clear',
 }
-const hiddenCommands = new Set(['sudo'])
 
 async function run(raw: string) {
     const text = raw.trim()
@@ -250,7 +247,7 @@ async function run(raw: string) {
     const command = commands[name]
 
     // Comando conhecido (sem cara de pergunta) roda local; o resto vai para a IA
-    if (command && !text.endsWith('?')) {
+    if (command && !/[?¿]/.test(text)) {
         command.run(rest.join(' '))
         scrollToEnd()
         return
@@ -278,12 +275,12 @@ async function ask(question: string) {
         const res = await fetch('/api/ask', {
             method: 'POST',
             headers: { 'content-type': 'application/json' },
-            body: JSON.stringify({ question, history: conversation.slice(-6) }),
+            body: JSON.stringify({ question, history: conversation.slice(-6), locale: locale.value }),
         })
 
         if (!res.ok || !res.body) {
             const data = await res.json().catch(() => null)
-            line.text = data?.message || data?.statusMessage || 'O assistente está indisponível no momento.'
+            line.text = data?.message || data?.statusMessage || t('terminal.unavailable')
             return
         }
 
@@ -299,7 +296,7 @@ async function ask(question: string) {
 
         conversation.push({ role: 'user', content: question }, { role: 'assistant', content: line.text })
     } catch {
-        line.text = 'Sem conexão com o assistente. Tente de novo.'
+        line.text = t('terminal.offline')
     } finally {
         line.streaming = false
         busy.value = false
@@ -324,18 +321,27 @@ async function typeCommand(text: string, animate: boolean) {
     await sleep(250)
 }
 
-onMounted(async () => {
-    const animate = !window.matchMedia('(prefers-reduced-motion: reduce)').matches
+async function boot(animate: boolean) {
     busy.value = true
+    lines.value = []
     await sleep(animate ? 600 : 0)
     await typeCommand('whoami', animate)
     commands.whoami.run('')
     await sleep(animate ? 400 : 0)
-    push({
-        kind: 'hint',
-        text: 'Digite help para ver os comandos ou faça uma pergunta sobre o Gabriel. A IA responde com base no currículo dele.',
-    })
+    push({ kind: 'hint', text: t('terminal.hint') })
     busy.value = false
+}
+
+onMounted(() => {
+    boot(!window.matchMedia('(prefers-reduced-motion: reduce)').matches)
+})
+
+// Troca de idioma: reinicia o terminal já no novo idioma (sem animação)
+watch(locale, () => {
+    if (!busy.value) {
+        conversation.length = 0
+        boot(false)
+    }
 })
 </script>
 

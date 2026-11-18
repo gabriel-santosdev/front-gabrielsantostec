@@ -4,56 +4,31 @@
             <!-- Sobre -->
             <div class="about">
                 <div class="about__text" v-reveal>
-                    <p class="gs-kicker">01. sobre</p>
-                    <h2 class="gs-heading">Full stack na prática.<br /><span class="gs-gradient-text">Front-end como
-                            especialidade.</span></h2>
+                    <p class="gs-kicker">{{ t('about.kicker') }}</p>
+                    <h2 class="gs-heading">{{ t('about.title') }}<br /><span class="gs-gradient-text">{{
+                            t('about.titleAccent') }}</span></h2>
                     <div class="about__body">
-                        <p class="gs-body gs-body--muted">
-                            Sou Software Engineer Full Stack com mais de 4 anos de experiência entregando produtos web
-                            completos. No back-end, desenvolvo <strong>APIs REST</strong>, regras de negócio complexas e
-                            modelagem de dados com <strong>PHP e Laravel</strong>, além de camadas BFF em
-                            <strong>Node.js</strong> integradas a microsserviços. No front-end, construo interfaces
-                            escaláveis com <strong>Vue.js</strong>, <strong>React</strong>, <strong>Angular</strong> e
-                            <strong>TypeScript</strong>.
-                        </p>
-                        <p class="gs-body gs-body--muted">
-                            Participei da criação de um sistema financeiro do zero, da arquitetura ao deploy, e do
-                            desenvolvimento de aplicações de alta disponibilidade em micro frontends na Equifax | Boa
-                            Vista. Também levo <strong>Inteligência Artificial</strong> para produtos reais: relatórios
-                            financeiros gerados por chat a partir de consultas SQL e MCPs que conectam aplicações a
-                            agentes de IA.
-                        </p>
-                        <p class="gs-body gs-body--muted">
-                            Cuido da qualidade em todas as camadas, com testes unitários e E2E (Jest, Vitest e Cypress),
-                            design systems documentados em Storybook e code reviews. Já atuei como líder técnico e como
-                            buddy de novos desenvolvedores.
-                        </p>
+                        <!-- textos estáticos de i18n/locales, com <strong> -->
+                        <p class="gs-body gs-body--muted" v-html="t('about.p1')"></p>
+                        <p class="gs-body gs-body--muted" v-html="t('about.p2')"></p>
+                        <p class="gs-body gs-body--muted" v-html="t('about.p3')"></p>
                     </div>
+                    <p class="about__caption">
+                        <span><i class="mdi mdi-map-marker-outline" aria-hidden="true"></i> {{ t('about.location') }}</span>
+                        <span><i class="mdi mdi-school-outline" aria-hidden="true"></i> {{ t('about.degree') }}</span>
+                    </p>
                 </div>
-
-                <figure class="about__photo" v-reveal="120">
-                    <div class="about__frame">
-                        <img src="/profile-gs-960.webp"
-                            srcset="/profile-gs-480.webp 480w, /profile-gs-960.webp 960w"
-                            sizes="(max-width: 834px) 320px, 380px" alt="Foto de Gabriel Santos" width="960"
-                            height="960" loading="lazy" decoding="async" />
-                    </div>
-                    <figcaption class="about__caption">
-                        <span><i class="mdi mdi-map-marker-outline" aria-hidden="true"></i> Brasil · remoto</span>
-                        <span><i class="mdi mdi-school-outline" aria-hidden="true"></i> ADS</span>
-                    </figcaption>
-                </figure>
             </div>
 
             <!-- Experiência -->
             <div class="resume__block">
                 <div class="resume__block-head" v-reveal>
-                    <h3 class="resume__block-title">Experiência</h3>
-                    <p class="resume__cmd"><span>$</span> git log --carreira</p>
+                    <h3 class="resume__block-title">{{ t('resume.experience') }}</h3>
+                    <p class="resume__cmd"><span>$</span> {{ t('resume.gitLog') }}</p>
                 </div>
 
                 <div class="timeline">
-                    <article v-for="job in experience" :key="job.company" class="job" v-reveal>
+                    <article v-for="job in portfolio.experience" :key="job.company" class="job" v-reveal>
                         <header class="job__head">
                             <span class="job__node" aria-hidden="true"></span>
                             <h4 class="job__company">{{ job.company }}</h4>
@@ -78,9 +53,9 @@
             <!-- Formação -->
             <div class="resume__block resume__block--edu">
                 <div class="resume__block-head" v-reveal>
-                    <h3 class="resume__block-title">Formação</h3>
+                    <h3 class="resume__block-title">{{ t('resume.education') }}</h3>
                 </div>
-                <article v-for="item in education" :key="item.title" class="gs-card edu" v-reveal>
+                <article v-for="item in portfolio.education" :key="item.title" class="gs-card edu" v-reveal>
                     <i class="mdi mdi-school-outline edu__icon" aria-hidden="true"></i>
                     <div>
                         <p class="role__period">{{ item.period }}</p>
@@ -91,7 +66,7 @@
 
                 <div class="resume__cta">
                     <a href="https://linkedin.com/in/devgabrielsantos" target="_blank" rel="noopener noreferrer"
-                        class="gs-link">Currículo completo no LinkedIn</a>
+                        class="gs-link">{{ t('resume.linkedin') }}</a>
                 </div>
             </div>
         </div>
@@ -99,17 +74,15 @@
 </template>
 
 <script setup lang="ts">
-import { education, experience } from '~/data/portfolio'
+const { t } = useI18n()
+const portfolio = usePortfolio()
 
 </script>
 
 <style scoped>
 /* ---------- Sobre ---------- */
 .about {
-    display: grid;
-    grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
-    gap: 72px;
-    align-items: center;
+    max-width: 820px;
 }
 
 .about__body {
@@ -119,68 +92,11 @@ import { education, experience } from '~/data/portfolio'
     max-width: 640px;
 }
 
-.about__photo {
-    margin: 0;
-    justify-self: end;
-    width: 100%;
-    max-width: 380px;
-}
-
-.about__frame {
-    position: relative;
-    aspect-ratio: 1;
-}
-
-/* Moldura deslocada em roxo atrás da foto */
-.about__frame::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    transform: translate(16px, 16px);
-    border: 2px solid var(--color-primary);
-    border-radius: var(--radius-lg);
-    transition: transform 0.4s var(--ease-out);
-}
-
-.about__frame img {
-    position: relative;
-    display: block;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    border-radius: var(--radius-lg);
-    filter: grayscale(0.35) contrast(1.05);
-    transition: filter 0.4s ease, transform 0.4s var(--ease-out);
-}
-
-.about__frame::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    border-radius: var(--radius-lg);
-    background: linear-gradient(160deg, transparent 50%, rgba(111, 0, 255, 0.35));
-    mix-blend-mode: multiply;
-    pointer-events: none;
-    transition: opacity 0.4s ease;
-}
-
-.about__photo:hover .about__frame::before {
-    transform: translate(10px, 10px);
-}
-
-.about__photo:hover img {
-    filter: none;
-    transform: translate(-4px, -4px);
-}
-
-.about__photo:hover .about__frame::after {
-    opacity: 0;
-}
-
 .about__caption {
     display: flex;
     gap: 20px;
-    margin-top: 32px;
+    flex-wrap: wrap;
+    margin: 32px 0 0;
     font-family: var(--font-mono);
     font-size: 12px;
     color: var(--color-subtle);
@@ -395,16 +311,6 @@ import { education, experience } from '~/data/portfolio'
 }
 
 @media (max-width: 834px) {
-    .about {
-        grid-template-columns: 1fr;
-        gap: 56px;
-    }
-
-    .about__photo {
-        justify-self: start;
-        max-width: 320px;
-    }
-
     .resume__block {
         margin-top: 88px;
     }

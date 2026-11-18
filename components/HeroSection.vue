@@ -5,7 +5,6 @@
 
         <div class="hero__inner">
             <div class="hero__text">
-
                 <p class="hero__prompt"><span class="hero__prompt-sign">$</span> whoami</p>
                 <h1 class="gs-display hero__name">
                     Gabriel<br /><span class="gs-gradient-text">Santos</span>
@@ -13,24 +12,21 @@
 
                 <p class="hero__role">
                     <span class="hero__role-sign" aria-hidden="true">&gt;</span>
-                    <span class="sr-only">Software Engineer Full Stack</span>
+                    <span class="sr-only">{{ t('hero.role') }}</span>
                     <span aria-hidden="true">{{ typed }}<span class="hero__caret"></span></span>
                 </p>
 
-                <p class="hero__lead">
-                    Desenvolvo produtos web de ponta a ponta: APIs e regras de negócio com
-                    <strong>Laravel</strong> e <strong>Node.js</strong>, interfaces com <strong>Vue</strong>,
-                    <strong>React</strong> e <strong>Angular</strong>, e integrações com Inteligência Artificial.
-                </p>
+                <!-- texto estático de i18n/locales, com <strong> -->
+                <p class="hero__lead" v-html="t('hero.lead')"></p>
 
                 <div class="hero__actions">
                     <a href="#projects" class="gs-btn gs-btn--primary">
-                        Ver projetos <i class="mdi mdi-arrow-down" aria-hidden="true"></i>
+                        {{ t('hero.ctaProjects') }} <i class="mdi mdi-arrow-down" aria-hidden="true"></i>
                     </a>
-                    <a href="#cv" class="gs-btn gs-btn--outline">./sobre-mim</a>
+                    <a href="#cv" class="gs-btn gs-btn--outline">{{ t('hero.ctaAbout') }}</a>
                 </div>
 
-                <ul class="hero__social" aria-label="Redes">
+                <ul class="hero__social" :aria-label="t('hero.social')">
                     <li>
                         <a href="https://github.com/gabriel-santosdev" target="_blank" rel="noopener noreferrer"
                             aria-label="GitHub"><i class="mdi mdi-github" aria-hidden="true"></i></a>
@@ -60,29 +56,31 @@
 </template>
 
 <script setup lang="ts">
-import { onBeforeUnmount, onMounted, ref } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { whatsappLink } from '~/utils/whatsapp'
 
-const whatsapp = whatsappLink('Olá, Gabriel! Vim pelo seu site.')
+const { t, locale } = useI18n()
 
-const stats = [
-    { value: '4+ anos', label: 'de experiência' },
-    { value: 'Full stack', label: 'Laravel · Node · Vue' },
-    { value: '3 empresas', label: 'incluindo Equifax | Boa Vista' },
-    { value: 'IA aplicada', label: 'MCPs e relatórios via chat' },
-]
+const whatsapp = computed(() => whatsappLink(t('hero.whatsappMessage')))
+
+const stats = computed(() =>
+    (['years', 'fullstack', 'companies', 'ai'] as const).map((key) => ({
+        value: t(`hero.stats.${key}.value`),
+        label: t(`hero.stats.${key}.label`),
+    }))
+)
 
 /* ---------- Efeito de digitação ---------- */
-const roles = [
-    'Software Engineer Full Stack',
-    'Front-end com Vue, React e Angular',
-    'Back-end com Laravel e Node.js',
-    'IA aplicada a produtos reais',
-]
-const typed = ref(roles[0])
+const rolesRef = computed(() =>
+    (['fullstack', 'frontend', 'backend', 'ai'] as const).map((key) => t(`hero.roles.${key}`))
+)
+const typed = ref(rolesRef.value[0])
 let typingTimer: ReturnType<typeof setTimeout> | undefined
+let animate = false
 
 function startTyping() {
+    clearTimeout(typingTimer)
+    const roles = rolesRef.value
     let roleIndex = 0
     let charIndex = roles[0].length
     let deleting = true
@@ -124,7 +122,15 @@ function onPointerMove(e: PointerEvent) {
 }
 
 onMounted(() => {
-    if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) startTyping()
+    animate = !window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    if (animate) startTyping()
+})
+
+// Troca de idioma: recomeça a animação com os cargos traduzidos
+watch(locale, () => {
+    clearTimeout(typingTimer)
+    typed.value = rolesRef.value[0]
+    if (animate) startTyping()
 })
 
 onBeforeUnmount(() => clearTimeout(typingTimer))

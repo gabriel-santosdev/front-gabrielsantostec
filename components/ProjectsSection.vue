@@ -3,21 +3,19 @@
         <div class="gs-container--wide">
             <div class="gs-section-header" v-reveal>
                 <div>
-                    <p class="gs-kicker">03. projetos</p>
-                    <h2 class="gs-heading">Projetos recentes.</h2>
-                    <p class="gs-body gs-body--muted gs-section-header__lead">
-                        Sites no ar, feitos para clientes reais, com foco em design, performance e SEO.
-                    </p>
+                    <p class="gs-kicker">{{ t('projects.kicker') }}</p>
+                    <h2 class="gs-heading">{{ t('projects.title') }}</h2>
+                    <p class="gs-body gs-body--muted gs-section-header__lead">{{ t('projects.lead') }}</p>
                 </div>
-                <a href="#contact" class="gs-link">Quero um projeto assim</a>
+                <a href="#contact" class="gs-link">{{ t('projects.cta') }}</a>
             </div>
 
             <div class="projects__grid">
-                <article v-for="(project, index) in projects" :key="project.title" v-reveal="index === 0 ? 0 : (index - 1) * 100"
+                <article v-for="(project, index) in portfolio.projects" :key="project.title" v-reveal="index === 0 ? 0 : (index - 1) * 100"
                     class="project" :class="{ 'project--featured': index === 0 }">
                     <!-- Mockup de navegador -->
                     <a class="browser" :href="project.live" target="_blank" rel="noopener noreferrer"
-                        :aria-label="`Abrir o site ${project.title}`" tabindex="-1">
+                        :aria-label="t('projects.openSite', { title: project.title })" tabindex="-1">
                         <div class="browser__bar">
                             <span class="gs-window-dots" aria-hidden="true"><i></i><i></i><i></i></span>
                             <span class="browser__url">
@@ -28,7 +26,7 @@
                             <img :src="`/projects/${project.image}-1600.webp`"
                                 :srcset="`/projects/${project.image}-800.webp 800w, /projects/${project.image}-1600.webp 1600w`"
                                 :sizes="index === 0 ? '(max-width: 1024px) 100vw, 680px' : '(max-width: 834px) 100vw, (max-width: 1024px) 50vw, 400px'"
-                                :alt="`Site ${project.title} exibido em notebook e celular`" width="1600" height="1103"
+                                :alt="t('projects.imageAlt', { title: project.title })" width="1600" height="1103"
                                 :loading="index === 0 ? 'eager' : 'lazy'" decoding="async" />
                         </div>
                     </a>
@@ -45,12 +43,12 @@
                         </ul>
                         <div class="project__links">
                             <a v-if="project.live" :href="project.live" target="_blank" rel="noopener noreferrer"
-                                class="project__link" :aria-label="`Visitar o site ${project.title}`">
-                                <i class="mdi mdi-open-in-new" aria-hidden="true"></i> Visitar site
+                                class="project__link" :aria-label="t('projects.visitAria', { title: project.title })">
+                                <i class="mdi mdi-open-in-new" aria-hidden="true"></i> {{ t('projects.visit') }}
                             </a>
                             <a v-if="project.repo" :href="project.repo" target="_blank" rel="noopener noreferrer"
-                                class="project__link" :aria-label="`Código de ${project.title} no GitHub`">
-                                <i class="mdi mdi-github" aria-hidden="true"></i> Código
+                                class="project__link" :aria-label="t('projects.codeAria', { title: project.title })">
+                                <i class="mdi mdi-github" aria-hidden="true"></i> {{ t('projects.code') }}
                             </a>
                         </div>
                     </div>
@@ -58,7 +56,7 @@
             </div>
 
             <div class="projects__more" v-reveal>
-                <p class="gs-small">Mais código e experimentos no GitHub.</p>
+                <p class="gs-small">{{ t('projects.more') }}</p>
                 <a href="https://github.com/gabriel-santosdev" target="_blank" rel="noopener noreferrer"
                     class="gs-btn gs-btn--outline gs-btn--sm"><i class="mdi mdi-github" aria-hidden="true"></i>
                     github.com/gabriel-santosdev</a>
@@ -68,7 +66,8 @@
 </template>
 
 <script setup lang="ts">
-import { projects } from '~/data/portfolio'
+const { t } = useI18n()
+const portfolio = usePortfolio()
 
 function domain(url?: string): string {
     if (!url) return ''

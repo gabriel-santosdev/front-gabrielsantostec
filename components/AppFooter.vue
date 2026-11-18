@@ -3,15 +3,15 @@
         <div class="gs-container--wide footer__inner">
             <div class="footer__brand">
                 <img src="/logo-gs.png" alt="Gabriel Santos" width="2712" height="724" class="footer__logo" />
-                <p class="footer__tagline">Software Engineer Full Stack</p>
+                <p class="footer__tagline">{{ t('footer.tagline') }}</p>
             </div>
 
-            <nav class="footer__links" aria-label="Rodapé">
-                <a href="#cv">sobre</a>
-                <a href="#stack">stack</a>
-                <a href="#projects">projetos</a>
-                <a href="#services">serviços</a>
-                <a href="#contact">contato</a>
+            <nav class="footer__links" :aria-label="t('footer.label')">
+                <a href="#cv">{{ t('nav.about') }}</a>
+                <a href="#stack">{{ t('nav.stack') }}</a>
+                <a href="#projects">{{ t('nav.projects') }}</a>
+                <a href="#services">{{ t('nav.services') }}</a>
+                <a href="#contact">{{ t('nav.contact') }}</a>
             </nav>
 
             <div class="footer__social">
@@ -24,14 +24,15 @@
 
         <div class="gs-container--wide footer__bottom">
             <p>&copy; {{ currentYear }} gabrielsantos.tec</p>
-            <p>Feito com <span class="footer__accent">Nuxt</span> + <span class="footer__accent">Vue</span> ·
-                <a href="#hero" class="footer__top">voltar ao topo ↑</a>
+            <p>{{ t('footer.madeWith') }} <span class="footer__accent">Nuxt</span> + <span class="footer__accent">Vue</span> ·
+                <a href="#hero" class="footer__top">{{ t('footer.top') }}</a>
             </p>
         </div>
     </footer>
 </template>
 
 <script setup lang="ts">
+const { t } = useI18n()
 const currentYear = new Date().getFullYear()
 </script>
 

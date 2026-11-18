@@ -3,14 +3,12 @@
         <div class="gs-container">
             <div class="gs-section-header" v-reveal>
                 <div>
-                    <p class="gs-kicker">02. stack</p>
-                    <h2 class="gs-heading">Ferramentas do dia a dia.</h2>
-                    <p class="gs-body gs-body--muted gs-section-header__lead">
-                        Do banco de dados à interface, com qualidade e IA em todas as camadas.
-                    </p>
+                    <p class="gs-kicker">{{ t('stack.kicker') }}</p>
+                    <h2 class="gs-heading">{{ t('stack.title') }}</h2>
+                    <p class="gs-body gs-body--muted gs-section-header__lead">{{ t('stack.lead') }}</p>
                 </div>
                 <a href="https://github.com/gabriel-santosdev" target="_blank" rel="noopener noreferrer"
-                    class="gs-link">Ver código no GitHub</a>
+                    class="gs-link">{{ t('stack.github') }}</a>
             </div>
         </div>
 
@@ -23,7 +21,7 @@
 
         <div class="gs-container">
             <div class="stack__grid">
-                <article v-for="(group, i) in groups" :key="group.title" v-reveal="(i % 3) * 80"
+                <article v-for="(group, i) in portfolio.stackGroups" :key="group.title" v-reveal="(i % 3) * 80"
                     class="gs-card gs-card--interactive stack__card" @pointermove="spotlight">
                     <div class="stack__card-head">
                         <span class="stack__icon"><i :class="['mdi', group.icon]" aria-hidden="true"></i></span>
@@ -41,7 +39,10 @@
 </template>
 
 <script setup lang="ts">
-import { marqueeTechs as marquee, stackGroups as groups } from '~/data/portfolio'
+import { marqueeTechs as marquee } from '~/data/portfolio'
+
+const { t } = useI18n()
+const portfolio = usePortfolio()
 
 // Spotlight roxo que acompanha o cursor dentro do card
 function spotlight(e: PointerEvent) {

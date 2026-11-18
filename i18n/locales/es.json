@@ -1,0 +1,173 @@
+{
+  "meta": {
+    "title": "Gabriel Santos {'|'} Software Engineer Full Stack",
+    "description": "Gabriel Santos, Software Engineer Full Stack con más de 4 años de experiencia en Laravel, Node.js, Vue, React, Angular y TypeScript. Currículum, stack, proyectos y servicios."
+  },
+  "nav": {
+    "label": "Navegación principal",
+    "home": "Gabriel Santos, inicio",
+    "about": "sobre-mí",
+    "stack": "stack",
+    "projects": "proyectos",
+    "services": "servicios",
+    "contact": "contacto",
+    "cta": "Hablemos",
+    "openMenu": "Abrir menú",
+    "closeMenu": "Cerrar menú",
+    "language": "Idioma"
+  },
+  "hero": {
+    "role": "Software Engineer Full Stack",
+    "roles": {
+      "fullstack": "Software Engineer Full Stack",
+      "frontend": "Front-end con Vue, React y Angular",
+      "backend": "Back-end con Laravel y Node.js",
+      "ai": "IA aplicada a productos reales"
+    },
+    "lead": "Desarrollo productos web de punta a punta: APIs y reglas de negocio con <strong>Laravel</strong> y <strong>Node.js</strong>, interfaces con <strong>Vue</strong>, <strong>React</strong> y <strong>Angular</strong>, e integraciones con Inteligencia Artificial.",
+    "ctaProjects": "Ver proyectos",
+    "ctaAbout": "./sobre-mi",
+    "social": "Redes",
+    "whatsappMessage": "¡Hola, Gabriel! Llegué desde tu sitio web.",
+    "stats": {
+      "years": {
+        "value": "4+ años",
+        "label": "de experiencia"
+      },
+      "fullstack": {
+        "value": "Full stack",
+        "label": "Laravel · Node · Vue"
+      },
+      "companies": {
+        "value": "3 empresas",
+        "label": "incluida Equifax"
+      },
+      "ai": {
+        "value": "IA aplicada",
+        "label": "MCPs e informes por chat"
+      }
+    }
+  },
+  "terminal": {
+    "label": "Terminal interactiva",
+    "inputLabel": "Comando o pregunta",
+    "placeholder": "escribe help o pregunta algo",
+    "suggestions": "Sugerencias",
+    "hint": "Escribe help para ver los comandos o haz una pregunta sobre Gabriel. La IA responde según su currículum.",
+    "whoami": "Gabriel Santos, Software Engineer Full Stack. Más de 4 años construyendo productos web desde la base de datos hasta la interfaz: Laravel y Node.js en el back-end, Vue, React y Angular en el front-end, e IA aplicada a productos reales.",
+    "thinking": "pensando",
+    "anyQuestion": "<pregunta>",
+    "anyQuestionDesc": "cualquier otra cosa va a la IA",
+    "fileNotFound": "cat: {file}: archivo no encontrado. Usa ls para ver los archivos.",
+    "catUsage": "uso: cat <archivo>",
+    "sudoOk": "Permiso concedido. Abriendo el contacto…",
+    "sudoNo": "Buen intento. Prueba: sudo hire gabriel",
+    "unavailable": "El asistente no está disponible en este momento.",
+    "offline": "Sin conexión con el asistente. Inténtalo de nuevo.",
+    "commands": {
+      "help": "lista los comandos",
+      "whoami": "quién es Gabriel",
+      "experience": "empresas y cargos",
+      "stack": "tecnologías por área",
+      "projects": "sitios y apps en línea",
+      "ls": "archivos de código de ejemplo",
+      "cat": "muestra un archivo (ej.: cat ReportChat.vue)",
+      "contact": "cómo hablar con Gabriel",
+      "clear": "limpia la terminal"
+    },
+    "files": {
+      "reportController": "Laravel: consulta los datos y pide el resumen a la IA",
+      "reportChat": "Vue + TypeScript: el chat que muestra el informe",
+      "financeMcp": "MCP: expone los datos del producto a agentes de IA",
+      "askPost": "Nuxt: la ruta que responde las preguntas de esta terminal"
+    },
+    "contact": {
+      "form": "sección de contacto de esta página",
+      "whatsapp": "respuesta rápida",
+      "whatsappMessage": "¡Hola, Gabriel! Llegué desde la terminal de tu sitio."
+    },
+    "chips": {
+      "react": "¿Ha trabajado con React?",
+      "hire": "¿Por qué contratar a Gabriel?",
+      "hireQuestion": "¿Por qué debería contratar a Gabriel?"
+    }
+  },
+  "about": {
+    "kicker": "01. sobre-mí",
+    "title": "Full stack en la práctica.",
+    "titleAccent": "Front-end como especialidad.",
+    "p1": "Soy Software Engineer Full Stack con más de 4 años de experiencia entregando productos web completos. En el back-end, desarrollo <strong>APIs REST</strong>, reglas de negocio complejas y modelado de datos con <strong>PHP y Laravel</strong>, además de capas BFF en <strong>Node.js</strong> integradas a microservicios. En el front-end, construyo interfaces escalables con <strong>Vue.js</strong>, <strong>React</strong>, <strong>Angular</strong> y <strong>TypeScript</strong>.",
+    "p2": "Participé en la creación de un sistema financiero desde cero, de la arquitectura al deploy, y en el desarrollo de aplicaciones de alta disponibilidad con micro frontends en Equifax y Boa Vista. También llevo la <strong>Inteligencia Artificial</strong> a productos reales: informes financieros generados por chat a partir de consultas SQL y MCPs que conectan aplicaciones con agentes de IA.",
+    "p3": "Cuido la calidad en todas las capas, con pruebas unitarias y E2E (Jest, Vitest y Cypress), design systems documentados en Storybook y code reviews. He trabajado como líder técnico y como buddy de nuevos desarrolladores.",
+    "location": "Brasil · remoto",
+    "degree": "ADS"
+  },
+  "resume": {
+    "experience": "Experiencia",
+    "gitLog": "git log --carrera",
+    "education": "Formación",
+    "linkedin": "Currículum completo en LinkedIn"
+  },
+  "stack": {
+    "kicker": "02. stack",
+    "title": "Herramientas del día a día.",
+    "lead": "De la base de datos a la interfaz, con calidad e IA en todas las capas.",
+    "github": "Ver código en GitHub"
+  },
+  "projects": {
+    "kicker": "03. proyectos",
+    "title": "Proyectos recientes.",
+    "lead": "Sitios y apps en línea, hechos para clientes reales, con foco en diseño, rendimiento y SEO.",
+    "cta": "Quiero un proyecto así",
+    "visit": "Visitar sitio",
+    "code": "Código",
+    "openSite": "Abrir el sitio {title}",
+    "visitAria": "Visitar el sitio {title}",
+    "codeAria": "Código de {title} en GitHub",
+    "imageAlt": "Sitio {title} en un portátil y un celular",
+    "more": "Más código y experimentos en GitHub."
+  },
+  "services": {
+    "kicker": "04. servicios",
+    "title": "Tu proyecto, del papel",
+    "titleEnd": "a la web.",
+    "lead": "Sitios y aplicaciones con foco en rendimiento, estética y resultados. Del primer boceto al sitio en línea, y después también.",
+    "budget": "Pedir presupuesto",
+    "budgetMessage": "¡Hola! Me interesa un sitio web profesional. ¿Podemos hablar?",
+    "orMessage": "O envía un mensaje"
+  },
+  "contact": {
+    "kicker": "05. contacto",
+    "title": "¿Construimos",
+    "titleAccent": "algo juntos?",
+    "lead": "¿Tienes un proyecto o una oportunidad? Envíame un mensaje y te responderé lo antes posible.",
+    "quickReply": "Respuesta rápida",
+    "window": "nuevo-mensaje.sh",
+    "name": "nombre",
+    "namePlaceholder": "Tu nombre",
+    "email": "email",
+    "emailPlaceholder": "tu{'@'}empresa.com",
+    "subject": "asunto",
+    "message": "mensaje",
+    "messagePlaceholder": "Cuéntame un poco sobre el proyecto o la vacante",
+    "subjects": {
+      "project": "Proyecto / presupuesto",
+      "job": "Oportunidad laboral",
+      "other": "Otro asunto"
+    },
+    "required": "Campo obligatorio",
+    "invalidEmail": "Ingresa un email válido",
+    "sendError": "No se pudo enviar ahora. Inténtalo de nuevo o escríbeme por WhatsApp.",
+    "send": "Enviar mensaje",
+    "sending": "Enviando…",
+    "sent": "mensaje enviado con éxito",
+    "thanks": "¡Gracias por escribir! Te responderé lo antes posible.",
+    "another": "Enviar otro mensaje"
+  },
+  "footer": {
+    "label": "Pie de página",
+    "tagline": "Software Engineer Full Stack",
+    "madeWith": "Hecho con",
+    "top": "volver arriba ↑"
+  }
+}

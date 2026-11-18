@@ -3,10 +3,11 @@
         <div class="contact__glow" aria-hidden="true"></div>
         <div class="gs-container contact">
             <div class="contact__intro" v-reveal>
-                <p class="gs-kicker">05. contato</p>
-                <h2 class="gs-heading">Vamos construir<br /><span class="gs-gradient-text">algo juntos?</span></h2>
+                <p class="gs-kicker">{{ t('contact.kicker') }}</p>
+                <h2 class="gs-heading">{{ t('contact.title') }}<br /><span class="gs-gradient-text">{{
+                            t('contact.titleAccent') }}</span></h2>
                 <p class="gs-body gs-body--muted contact__lead">
-                    Tem um projeto ou uma oportunidade? Me mande uma mensagem e eu respondo o mais breve possível.
+                    {{ t('contact.lead') }}
                 </p>
                 <ul class="contact__channels">
                     <li v-for="channel in channels" :key="channel.label">
@@ -25,59 +26,59 @@
             <div class="terminal" v-reveal="120">
                 <div class="terminal__bar">
                     <span class="gs-window-dots" aria-hidden="true"><i></i><i></i><i></i></span>
-                    <span class="terminal__title">nova-mensagem.sh</span>
+                    <span class="terminal__title">{{ t('contact.window') }}</span>
                 </div>
 
                 <form class="contact__form" novalidate @submit.prevent="submitForm">
                     <div v-if="success" class="contact__success" role="status">
-                        <p class="contact__success-line"><span>✓</span> mensagem enviada com sucesso</p>
-                        <p class="gs-small">Obrigado pelo contato! Responderei o mais breve possível.</p>
-                        <button type="button" class="gs-link contact__reset" @click="success = false">Enviar outra
-                            mensagem</button>
+                        <p class="contact__success-line"><span>✓</span> {{ t('contact.sent') }}</p>
+                        <p class="gs-small">{{ t('contact.thanks') }}</p>
+                        <button type="button" class="gs-link contact__reset" @click="success = false">{{ t('contact.another') }}</button>
                     </div>
 
                     <template v-else>
                         <div class="field-row">
                             <label class="field">
-                                <span class="field__label">nome</span>
+                                <span class="field__label">{{ t('contact.name') }}</span>
                                 <input v-model.trim="form.name" type="text" name="name" autocomplete="name"
-                                    placeholder="Seu nome" :aria-invalid="touched && !form.name" />
-                                <span v-if="touched && !form.name" class="field__error">Campo obrigatório</span>
+                                    :placeholder="t('contact.namePlaceholder')" :aria-invalid="touched && !form.name" />
+                                <span v-if="touched && !form.name" class="field__error">{{ t('contact.required') }}</span>
                             </label>
 
                             <label class="field">
-                                <span class="field__label">email</span>
+                                <span class="field__label">{{ t('contact.email') }}</span>
                                 <input v-model.trim="form.email" type="email" name="email" autocomplete="email"
-                                    placeholder="voce@empresa.com" :aria-invalid="touched && !emailValid" />
-                                <span v-if="touched && !emailValid" class="field__error">Informe um e-mail
-                                    válido</span>
+                                    :placeholder="t('contact.emailPlaceholder')" :aria-invalid="touched && !emailValid" />
+                                <span v-if="touched && !emailValid" class="field__error">{{
+                                    t('contact.invalidEmail') }}</span>
                             </label>
                         </div>
 
                         <label class="field">
-                            <span class="field__label">assunto</span>
+                            <span class="field__label">{{ t('contact.subject') }}</span>
                             <select v-model="form.subject" name="subject">
-                                <option v-for="option in subjects" :key="option" :value="option">{{ option }}
+                                <option v-for="key in subjectKeys" :key="key" :value="key">
+                                    {{ t(`contact.subjects.${key}`) }}
                                 </option>
                             </select>
                         </label>
 
                         <label class="field">
-                            <span class="field__label">mensagem</span>
+                            <span class="field__label">{{ t('contact.message') }}</span>
                             <textarea v-model.trim="form.message" name="message" rows="5"
-                                placeholder="Conte um pouco sobre o projeto ou a vaga"
+                                :placeholder="t('contact.messagePlaceholder')"
                                 :aria-invalid="touched && !form.message"></textarea>
-                            <span v-if="touched && !form.message" class="field__error">Campo obrigatório</span>
+                            <span v-if="touched && !form.message" class="field__error">{{ t('contact.required') }}</span>
                         </label>
 
                         <p v-if="error" class="field__error contact__error" role="alert">
-                            Não foi possível enviar agora. Tente novamente ou fale comigo pelo WhatsApp.
+                            {{ t('contact.sendError') }}
                         </p>
 
                         <button type="submit" class="gs-btn gs-btn--primary contact__submit" :disabled="loading">
                             <i :class="['mdi', loading ? 'mdi-loading mdi-spin' : 'mdi-send-outline']"
                                 aria-hidden="true"></i>
-                            {{ loading ? 'Enviando…' : 'Enviar mensagem' }}
+                            {{ loading ? t('contact.sending') : t('contact.send') }}
                         </button>
                     </template>
                 </form>
@@ -91,19 +92,22 @@ import { computed, ref, watch } from 'vue'
 import { useContactForm } from '@/composables/useContactForm'
 import { whatsappLink } from '~/utils/whatsapp'
 
-const subjects = ['Projeto / orçamento', 'Oportunidade de trabalho', 'Outro assunto']
+const { t, locale } = useI18n()
 
-const emptyForm = () => ({ name: '', email: '', subject: subjects[0], message: '' })
+const subjectKeys = ['project', 'job', 'other'] as const
+type SubjectKey = (typeof subjectKeys)[number]
+
+const emptyForm = () => ({ name: '', email: '', subject: 'project' as SubjectKey, message: '' })
 const form = ref(emptyForm())
 const touched = ref(false)
 
-const whatsapp = whatsappLink('Olá, Gabriel! Vim pelo seu site.')
+const whatsapp = computed(() => whatsappLink(t('hero.whatsappMessage')))
 
-const channels = [
-    { label: 'WhatsApp', value: 'Resposta rápida', icon: 'mdi-whatsapp', href: whatsapp },
+const channels = computed(() => [
+    { label: 'WhatsApp', value: t('contact.quickReply'), icon: 'mdi-whatsapp', href: whatsapp.value },
     { label: 'LinkedIn', value: 'in/devgabrielsantos', icon: 'mdi-linkedin', href: 'https://linkedin.com/in/devgabrielsantos' },
     { label: 'GitHub', value: 'gabriel-santosdev', icon: 'mdi-github', href: 'https://github.com/gabriel-santosdev' },
-]
+])
 
 const emailValid = computed(() => /.+@.+\..+/.test(form.value.email))
 const formValid = computed(() => !!form.value.name && emailValid.value && !!form.value.message)
@@ -113,7 +117,12 @@ const { sendContactForm, loading, error, success } = useContactForm('https://for
 async function submitForm() {
     touched.value = true
     if (!formValid.value) return
-    await sendContactForm(form.value)
+    // Envia o assunto já traduzido e o idioma da página, para saber em que língua responder
+    await sendContactForm({
+        ...form.value,
+        subject: t(`contact.subjects.${form.value.subject}`),
+        language: locale.value,
+    })
 }
 
 watch(success, (val) => {
