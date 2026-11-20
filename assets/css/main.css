@@ -5,7 +5,6 @@
  * para texto/realces sobre fundo escuro use --color-accent (#bb99ff).
  */
 :root {
-  /* Superfícies */
   --color-bg: #191919;
   --color-bg-deep: #121212;
   --color-surface: #202020;
@@ -13,12 +12,10 @@
   --color-border: rgba(242, 242, 242, 0.08);
   --color-border-strong: rgba(242, 242, 242, 0.16);
 
-  /* Texto */
   --color-text: #f2f2f2;
   --color-muted: #a3a3a3;
   --color-subtle: #737373;
 
-  /* Marca */
   --color-primary: #6f00ff;
   --color-primary-hover: #7f1aff;
   --color-secondary: #31007f;
@@ -27,19 +24,16 @@
   --gradient-brand: linear-gradient(135deg, #6f00ff 0%, #31007f 100%);
   --gradient-text: linear-gradient(90deg, #f2f2f2 0%, #bb99ff 100%);
 
-  /* Estados e sintaxe */
   --color-success: #4ade80;
   --color-danger: #ff7a90;
   --color-syntax-string: #f2c97d;
   --color-syntax-var: #7dd3fc;
   --color-syntax-comment: #6b6b6b;
 
-  /* Tipografia */
   --font-display: 'Space Grotesk', 'Inter', ui-sans-serif, system-ui, sans-serif;
   --font-text: 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, 'Cascadia Code', 'SF Mono', Menlo, Consolas, monospace;
 
-  /* Forma e ritmo */
   --radius-sm: 8px;
   --radius-md: 12px;
   --radius-lg: 16px;
@@ -74,13 +68,11 @@ body,
   color: #ffffff;
 }
 
-/* Scrollbar discreta */
 * {
   scrollbar-width: thin;
   scrollbar-color: #3a3a3a transparent;
 }
 
-/* ---------- Layout ---------- */
 .gs-section {
   position: relative;
   padding-block: var(--section-gap);
@@ -102,9 +94,6 @@ body,
   margin: 0 auto;
 }
 
-/* ---------- Tipografia ---------- */
-
-/* Rótulo de seção no estilo comentário de código: "01. sobre" */
 .gs-kicker {
   display: inline-flex;
   align-items: center;
@@ -205,7 +194,6 @@ body,
   border-radius: var(--radius-pill);
 }
 
-/* Tag de tecnologia */
 .gs-tag {
   display: inline-flex;
   align-items: center;
@@ -220,7 +208,6 @@ body,
   white-space: nowrap;
 }
 
-/* ---------- Links e botões ---------- */
 .gs-link {
   position: relative;
   color: var(--color-accent);
@@ -315,7 +302,6 @@ button:focus-visible {
   outline-offset: 3px;
 }
 
-/* ---------- Cards ---------- */
 .gs-card {
   position: relative;
   background: var(--color-surface);
@@ -345,7 +331,6 @@ button:focus-visible {
   margin-top: 16px;
 }
 
-/* Bolinhas de janela (macOS) usadas no editor, terminal e mockups */
 .gs-window-dots {
   display: inline-flex;
   gap: 7px;
@@ -370,7 +355,6 @@ button:focus-visible {
   background: #28c840;
 }
 
-/* Grade de fundo, usada no hero */
 .gs-grid-bg {
   background-image:
     linear-gradient(rgba(242, 242, 242, 0.035) 1px, transparent 1px),
@@ -378,7 +362,6 @@ button:focus-visible {
   background-size: 56px 56px;
 }
 
-/* ---------- Revelar ao rolar (ver plugins/reveal.ts) ---------- */
 .reveal {
   opacity: 0;
   transform: translateY(24px);

@@ -1,9 +1,4 @@
-/**
- * Trechos de código exibidos no terminal do hero (comando "cat <arquivo>").
- * Mostram uma feature full stack real: do controller Laravel ao componente Vue e ao MCP.
- * Os comentários do código ficam em inglês (padrão em código); a descrição de cada
- * arquivo vem de terminal.files.<key> em i18n/locales.
- */
+// A descrição de cada arquivo vem de terminal.files.<key> em i18n/locales
 export interface CodeSample {
   key: 'reportController' | 'reportChat' | 'financeMcp' | 'askPost'
   name: string

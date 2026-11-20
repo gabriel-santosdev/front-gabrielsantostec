@@ -1,7 +1,6 @@
 <template>
     <section class="gs-section resume" id="cv">
         <div class="gs-container">
-            <!-- Sobre -->
             <div class="about">
                 <div class="about__text" v-reveal>
                     <p class="gs-kicker">{{ t('about.kicker') }}</p>
@@ -20,7 +19,6 @@
                 </div>
             </div>
 
-            <!-- Experiência -->
             <div class="resume__block">
                 <div class="resume__block-head" v-reveal>
                     <h3 class="resume__block-title">{{ t('resume.experience') }}</h3>
@@ -50,7 +48,6 @@
                 </div>
             </div>
 
-            <!-- Formação -->
             <div class="resume__block resume__block--edu">
                 <div class="resume__block-head" v-reveal>
                     <h3 class="resume__block-title">{{ t('resume.education') }}</h3>
@@ -80,7 +77,6 @@ const portfolio = usePortfolio()
 </script>
 
 <style scoped>
-/* ---------- Sobre ---------- */
 .about {
     max-width: 820px;
 }
@@ -106,7 +102,6 @@ const portfolio = usePortfolio()
     color: var(--color-accent);
 }
 
-/* ---------- Blocos ---------- */
 .resume__block {
     margin-top: 120px;
 }
@@ -141,7 +136,6 @@ const portfolio = usePortfolio()
     color: var(--color-accent);
 }
 
-/* ---------- Timeline (git log) ---------- */
 .timeline {
     position: relative;
     padding-left: 36px;
@@ -278,7 +272,6 @@ const portfolio = usePortfolio()
     color: var(--color-accent);
 }
 
-/* ---------- Formação ---------- */
 .edu {
     display: flex;
     gap: 20px;

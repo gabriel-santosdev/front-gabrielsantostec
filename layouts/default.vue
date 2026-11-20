@@ -14,7 +14,6 @@ import AppFooter from '~/components/AppFooter.vue'
 
 const { t, locale, locales } = useI18n()
 
-// lang do <html> conforme o idioma (pt-BR, en-US, es-ES)
 useHead(() => ({
     htmlAttrs: { lang: locales.value.find((l) => l.code === locale.value)?.language },
 }))

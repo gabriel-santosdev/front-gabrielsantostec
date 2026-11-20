@@ -74,7 +74,6 @@ export function getContent(locale: string): PortfolioContent {
     return isLocale(locale) ? content[locale] : content.pt
 }
 
-// Nomes de tecnologias: iguais em todos os idiomas
 export const marqueeTechs = [
     'TypeScript', 'Vue.js', 'Nuxt', 'React', 'Next.js', 'Angular', 'Laravel', 'PHP', 'Node.js', 'SQL',
     'Storybook', 'SCSS', 'Jest', 'Vitest', 'Cypress', 'GCP', 'MCP',

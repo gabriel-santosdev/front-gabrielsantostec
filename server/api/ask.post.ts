@@ -1,63 +1,101 @@
-import { ApiError, FinishReason, GoogleGenAI, ThinkingLevel, type Content } from '@google/genai'
-import { isLocale } from '../../data/portfolio'
-import { getPortfolioPrompt } from '../utils/portfolioPrompt'
+import {
+  ApiError,
+  FinishReason,
+  GoogleGenAI,
+  HarmBlockThreshold,
+  HarmCategory,
+  ThinkingLevel,
+  type Content,
+  type SafetySetting,
+} from '@google/genai'
+import { isLocale, type Locale } from '../../data/portfolio'
+import {
+  clientIp,
+  createOutputGuard,
+  isTrustedRequest,
+  LIMITS,
+  looksLikeInjection,
+  releaseRateSlot,
+  sanitizeText,
+  takeRateSlot,
+  type RateResult,
+} from '../utils/aiGuard'
+import { getPortfolioPrompt, wrapQuestion } from '../utils/portfolioPrompt'
 
 /**
  * POST /api/ask
  * Body: { question: string, locale?: 'pt' | 'en' | 'es', history?: { role: 'user' | 'assistant', content: string }[] }
- * Resposta: texto puro em streaming (text/plain), lido pelo terminal do hero.
- *
- * Variáveis de ambiente (na Vercel: Settings > Environment Variables):
- * - GEMINI_API_KEY: chave gratuita do Google AI Studio (https://aistudio.google.com/apikey)
- * - GEMINI_MODEL (opcional): modelo a usar; padrão abaixo.
+ * Resposta: texto puro em streaming, lido pelo terminal do hero.
  */
 
 const DEFAULT_MODEL = 'gemini-3.8-flash'
-// Usados em ordem quando o modelo anterior está sobrecarregado (503), sem cota
-// gratuita (429) ou foi descontinuado (404). Cada modelo tem a própria cota grátis.
+// Tentados em ordem quando o anterior está sobrecarregado, sem cota ou descontinuado
 const FALLBACK_MODELS = ['gemini-3.7-flash', 'gemini-3.6-flash', 'gemini-3.5-flash', 'gemini-3.1-flash-lite']
 const RETRYABLE_STATUS = new Set([404, 429, 500, 503, 504])
-// Tempo máximo esperando o primeiro trecho da resposta antes de tentar o próximo modelo
 const FIRST_CHUNK_TIMEOUT_MS = 20_000
+const TOTAL_TIMEOUT_MS = 45_000
 
-// Mensagens que o próprio servidor escreve no terminal, no idioma da página
+const SAFETY_SETTINGS: SafetySetting[] = [
+  HarmCategory.HARM_CATEGORY_HARASSMENT,
+  HarmCategory.HARM_CATEGORY_HATE_SPEECH,
+  HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,
+  HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
+].map((category) => ({ category, threshold: HarmBlockThreshold.BLOCK_LOW_AND_ABOVE }))
+
+const BLOCKED_FINISH = new Set<FinishReason | undefined>([
+  FinishReason.SAFETY,
+  FinishReason.PROHIBITED_CONTENT,
+  FinishReason.BLOCKLIST,
+  FinishReason.SPII,
+  FinishReason.RECITATION,
+])
+
 const MESSAGES = {
   pt: {
     cantAnswer: 'Não consigo responder isso. Pergunte algo sobre a carreira ou os projetos do Gabriel.',
     quota: 'O assistente atingiu o limite de uso por agora. Tente de novo em instantes.',
     unavailable: 'O assistente está indisponível no momento.',
+    empty: 'Digite uma pergunta.',
+    tooLong: `Pergunta muito longa (máx. ${LIMITS.questionChars} caracteres).`,
+    forbidden: 'Requisição não permitida.',
+    rate: {
+      too_fast: 'Calma! Espere um instante antes da próxima pergunta.',
+      busy: 'Ainda estou respondendo a pergunta anterior.',
+      limited: 'Muitas perguntas em pouco tempo. Tente de novo em alguns minutos.',
+      global: 'O assistente está muito requisitado agora. Tente de novo mais tarde.',
+    },
   },
   en: {
     cantAnswer: "I can't answer that. Ask something about Gabriel's career or projects.",
     quota: 'The assistant hit its usage limit for now. Please try again shortly.',
     unavailable: 'The assistant is unavailable right now.',
+    empty: 'Type a question.',
+    tooLong: `Question too long (max. ${LIMITS.questionChars} characters).`,
+    forbidden: 'Request not allowed.',
+    rate: {
+      too_fast: 'Easy! Wait a moment before the next question.',
+      busy: "I'm still answering the previous question.",
+      limited: 'Too many questions in a short time. Try again in a few minutes.',
+      global: 'The assistant is very busy right now. Please try again later.',
+    },
   },
   es: {
     cantAnswer: 'No puedo responder eso. Pregunta algo sobre la carrera o los proyectos de Gabriel.',
     quota: 'El asistente alcanzó su límite de uso por ahora. Inténtalo de nuevo en unos instantes.',
     unavailable: 'El asistente no está disponible en este momento.',
+    empty: 'Escribe una pregunta.',
+    tooLong: `Pregunta demasiado larga (máx. ${LIMITS.questionChars} caracteres).`,
+    forbidden: 'Solicitud no permitida.',
+    rate: {
+      too_fast: '¡Calma! Espera un momento antes de la próxima pregunta.',
+      busy: 'Todavía estoy respondiendo la pregunta anterior.',
+      limited: 'Demasiadas preguntas en poco tiempo. Inténtalo de nuevo en unos minutos.',
+      global: 'El asistente está muy solicitado ahora. Inténtalo más tarde.',
+    },
   },
 }
 
 class FirstChunkTimeout extends Error {}
-const MAX_QUESTION_CHARS = 500
-const MAX_HISTORY_MESSAGES = 6
-const MAX_HISTORY_CHARS = 1500
-
-// Limite simples por IP para não estourar a cota gratuita. Em serverless ele vale
-// por instância; para um limite global use Vercel KV/Upstash.
-const RATE_LIMIT = 12
-const RATE_WINDOW_MS = 10 * 60 * 1000
-const hits = new Map<string, number[]>()
-
-function rateLimited(ip: string): boolean {
-  const now = Date.now()
-  const recent = (hits.get(ip) ?? []).filter((t) => now - t < RATE_WINDOW_MS)
-  recent.push(now)
-  hits.set(ip, recent)
-  if (hits.size > 5000) hits.clear()
-  return recent.length > RATE_LIMIT
-}
 
 let ai: GoogleGenAI | null = null
 function getClient(apiKey: string): GoogleGenAI {
@@ -65,144 +103,186 @@ function getClient(apiKey: string): GoogleGenAI {
   return ai
 }
 
+function fail(statusCode: number, message: string): never {
+  throw createError({ statusCode, statusMessage: 'Request rejected', message, data: { message } })
+}
+
+const RATE_STATUS: Record<Exclude<RateResult, 'ok'>, number> = { too_fast: 429, busy: 429, limited: 429, global: 503 }
+
 interface AskBody {
   question?: unknown
   history?: unknown
   locale?: unknown
 }
 
-// Converte o histórico do terminal para o formato do Gemini (user/model)
+async function readJsonBody(event: Parameters<typeof readRawBody>[0]): Promise<AskBody | null> {
+  const declared = Number(getHeader(event, 'content-length') ?? 0)
+  if (declared > LIMITS.bodyBytes) return null
+  const raw = await readRawBody(event, 'utf8').catch(() => undefined)
+  if (!raw || Buffer.byteLength(raw) > LIMITS.bodyBytes) return null
+  try {
+    const parsed = JSON.parse(raw)
+    return parsed && typeof parsed === 'object' && !Array.isArray(parsed) ? parsed : null
+  } catch {
+    return null
+  }
+}
+
+/**
+ * O histórico vem do navegador e pode ser forjado: passa pela mesma limpeza da
+ * pergunta e é descartado inteiro se alguma mensagem parecer uma tentativa de injeção.
+ */
 function sanitizeHistory(raw: unknown): Content[] {
   if (!Array.isArray(raw)) return []
-  const items = raw
-    .filter(
-      (m): m is { role: 'user' | 'assistant'; content: string } =>
-        !!m &&
-        (m.role === 'user' || m.role === 'assistant') &&
-        typeof m.content === 'string' &&
-        m.content.trim().length > 0
+  const items: Content[] = []
+  for (const m of raw.slice(-LIMITS.historyMessages)) {
+    if (!m || (m.role !== 'user' && m.role !== 'assistant') || typeof m.content !== 'string') continue
+    const text = sanitizeText(m.content, LIMITS.historyChars)
+    if (!text) continue
+    if (looksLikeInjection(text)) return []
+    items.push(
+      m.role === 'user'
+        ? { role: 'user', parts: [{ text: wrapQuestion(text) }] }
+        : { role: 'model', parts: [{ text }] }
     )
-    .slice(-MAX_HISTORY_MESSAGES)
-    .map((m) => ({
-      role: m.role === 'assistant' ? 'model' : 'user',
-      parts: [{ text: m.content.slice(0, MAX_HISTORY_CHARS) }],
-    }))
-
-  // A conversa precisa começar por uma mensagem do usuário
+  }
   while (items.length && items[0].role !== 'user') items.shift()
   return items
 }
 
 export default defineEventHandler(async (event) => {
-  const body = await readBody<AskBody>(event).catch(() => ({}) as AskBody)
-  const question = typeof body?.question === 'string' ? body.question.trim() : ''
+  setResponseHeaders(event, {
+    'cache-control': 'no-store',
+    'x-content-type-options': 'nosniff',
+    'x-robots-tag': 'noindex',
+  })
 
-  if (!question) {
-    throw createError({ statusCode: 400, statusMessage: 'Pergunta vazia.' })
-  }
-  if (question.length > MAX_QUESTION_CHARS) {
-    throw createError({
-      statusCode: 400,
-      statusMessage: `Pergunta muito longa (máx. ${MAX_QUESTION_CHARS} caracteres).`,
-    })
-  }
+  const body = await readJsonBody(event)
+  const locale: Locale = isLocale(body?.locale) ? body.locale : 'pt'
+  const msg = MESSAGES[locale]
 
-  const ip = getRequestIP(event, { xForwardedFor: true }) ?? 'unknown'
-  if (rateLimited(ip)) {
-    throw createError({
-      statusCode: 429,
-      statusMessage: 'Muitas perguntas em pouco tempo. Tente de novo em alguns minutos.',
-    })
-  }
+  if (!isTrustedRequest(event)) fail(403, msg.forbidden)
+  if (!body) fail(400, msg.forbidden)
+
+  const rawQuestion = typeof body.question === 'string' ? body.question : ''
+  if (rawQuestion.length > LIMITS.questionChars * 2) fail(400, msg.tooLong)
+  const question = sanitizeText(rawQuestion, LIMITS.questionChars + 1)
+  if (!question) fail(400, msg.empty)
+  if (question.length > LIMITS.questionChars) fail(400, msg.tooLong)
 
   const apiKey = process.env.GEMINI_API_KEY
-  if (!apiKey) {
-    throw createError({ statusCode: 503, statusMessage: 'Assistente de IA não configurado.' })
+  if (!apiKey) fail(503, msg.unavailable)
+
+  const ip = clientIp(event)
+  const slot = takeRateSlot(ip)
+  if (slot !== 'ok') fail(RATE_STATUS[slot], msg.rate[slot])
+
+  const encoder = new TextEncoder()
+  let current: AbortController | null = null
+  let cancelled = false
+
+  if (looksLikeInjection(question)) {
+    releaseRateSlot(ip)
+    setResponseHeader(event, 'content-type', 'text/plain; charset=utf-8')
+    return msg.cantAnswer
   }
 
   const contents: Content[] = [
     ...sanitizeHistory(body.history),
-    { role: 'user', parts: [{ text: question }] },
+    { role: 'user', parts: [{ text: wrapQuestion(question) }] },
   ]
-
-  const encoder = new TextEncoder()
 
   const stream = new ReadableStream<Uint8Array>({
     async start(controller) {
-      const write = (text: string) => controller.enqueue(encoder.encode(text))
-
-      const msg = MESSAGES[isLocale(body.locale) ? body.locale : 'pt']
+      const write = (text: string) => {
+        if (!cancelled) controller.enqueue(encoder.encode(text))
+      }
+      const guard = createOutputGuard(write)
       const models = [process.env.GEMINI_MODEL || DEFAULT_MODEL, ...FALLBACK_MODELS]
-      let wrote = false
+      let expired = false
+      const deadline = setTimeout(() => {
+        expired = true
+        current?.abort(new FirstChunkTimeout())
+      }, TOTAL_TIMEOUT_MS)
 
       try {
         for (const [i, model] of models.entries()) {
-          // Se o modelo não começar a responder a tempo, cancela e tenta o próximo
+          if (cancelled || expired) break
           const abort = new AbortController()
-          const timer = setTimeout(() => abort.abort(new FirstChunkTimeout()), FIRST_CHUNK_TIMEOUT_MS)
+          current = abort
+          const firstChunk = setTimeout(() => abort.abort(new FirstChunkTimeout()), FIRST_CHUNK_TIMEOUT_MS)
           try {
             const response = await getClient(apiKey).models.generateContentStream({
               model,
               contents,
               config: {
                 abortSignal: abort.signal,
-                systemInstruction: getPortfolioPrompt(body.locale),
-                maxOutputTokens: 1024, // respostas curtas por design (o prompt pede ~90 palavras)
-                // Perguntas simples: pouco raciocínio deixa a resposta mais rápida.
-                // thinkingLevel só existe na família Gemini 3; o 2.5 usa o padrão dele.
-                ...(model.startsWith('gemini-3')
-                  ? { thinkingConfig: { thinkingLevel: ThinkingLevel.LOW } }
-                  : {}),
+                systemInstruction: getPortfolioPrompt(locale),
+                safetySettings: SAFETY_SETTINGS,
+                temperature: 0.4,
+                maxOutputTokens: 1024,
+                ...(model.startsWith('gemini-3') ? { thinkingConfig: { thinkingLevel: ThinkingLevel.LOW } } : {}),
               },
             })
 
             let finishReason: FinishReason | undefined
+            let blocked = false
             for await (const chunk of response) {
+              if (cancelled) return
+              if (chunk.promptFeedback?.blockReason) blocked = true
               const text = chunk.text
               if (text) {
-                clearTimeout(timer)
-                write(text)
-                wrote = true
+                clearTimeout(firstChunk)
+                guard.push(text)
+                if (guard.tripped) break
               }
               finishReason = chunk.candidates?.[0]?.finishReason ?? finishReason
             }
 
-            if (finishReason === FinishReason.MAX_TOKENS) {
-              write('…')
-            } else if (!wrote) {
-              write(msg.cantAnswer)
+            if (guard.tripped) {
+              console.warn('[ask] resposta cortada: possível vazamento do prompt')
+              write(guard.wrote ? '…' : msg.cantAnswer)
+            } else if (blocked || BLOCKED_FINISH.has(finishReason)) {
+              guard.flush()
+              write(guard.wrote ? '…' : msg.cantAnswer)
+            } else {
+              guard.flush()
+              if (guard.tripped) write(guard.wrote ? '…' : msg.cantAnswer)
+              else if (finishReason === FinishReason.MAX_TOKENS) write('…')
+              else if (!guard.wrote) write(msg.cantAnswer)
             }
             return
           } catch (error) {
-            // Só troca de modelo se nada foi enviado ainda e o erro for temporário
-            const timedOut = abort.signal.aborted
+            const timedOut = abort.signal.aborted && !cancelled
             const retryable = timedOut || (error instanceof ApiError && RETRYABLE_STATUS.has(error.status))
-            if (wrote || !retryable || i === models.length - 1) throw error
-            const reason = timedOut ? 'timeout' : (error as ApiError).status
-            console.warn(`[ask] ${model} indisponível (${reason}), tentando o próximo modelo`)
+            if (cancelled || expired || guard.wrote || !retryable || i === models.length - 1) throw error
+            console.warn(`[ask] ${model} indisponível (${timedOut ? 'timeout' : (error as ApiError).status})`)
           } finally {
-            clearTimeout(timer)
+            clearTimeout(firstChunk)
           }
         }
       } catch (error) {
+        if (cancelled) return
         if (error instanceof ApiError && error.status === 429) {
           write(msg.quota)
-        } else if (error instanceof ApiError) {
-          console.error(`[ask] erro da API Gemini ${error.status}:`, error.message)
-          write(msg.unavailable)
         } else {
-          console.error('[ask] erro inesperado:', error)
-          write(msg.unavailable)
+          console.error('[ask] falha ao gerar resposta:', error instanceof ApiError ? error.status : (error as Error)?.name)
+          write(guard.wrote ? '…' : msg.unavailable)
         }
       } finally {
-        controller.close()
+        clearTimeout(deadline)
+        releaseRateSlot(ip)
+        if (!cancelled) controller.close()
       }
+    },
+    cancel() {
+      cancelled = true
+      current?.abort()
     },
   })
 
   setResponseHeaders(event, {
     'content-type': 'text/plain; charset=utf-8',
-    'cache-control': 'no-store',
     'x-accel-buffering': 'no',
   })
   return stream

@@ -79,8 +79,10 @@ interface ListItem {
     href?: string
 }
 
+type TextLine = { id: number; kind: 'cmd' | 'out' | 'hint' | 'error'; text: string }
+
 type Line =
-    | { id: number; kind: 'cmd' | 'out' | 'hint' | 'error'; text: string }
+    | TextLine
     | { id: number; kind: 'list'; items: ListItem[] }
     | { id: number; kind: 'code'; file: string; layer: string; html: string }
     | { id: number; kind: 'ai'; text: string; streaming: boolean }
@@ -125,9 +127,7 @@ function focusInput() {
     inputRef.value?.focus({ preventScroll: true })
 }
 
-/* ---------- Comandos ----------
- * Os nomes dos comandos são em inglês (padrão de terminal) e valem em todos os idiomas;
- * os apelidos abaixo aceitam as versões em português e espanhol. */
+// Comandos em inglês valem em todos os idiomas; os apelidos aceitam as versões em pt e es
 const commands: Record<string, { hidden?: boolean; run: (arg: string) => void }> = {
     help: {
         run: () =>
@@ -266,7 +266,6 @@ function historyNav(direction: number) {
     input.value = typed[historyIndex] ?? ''
 }
 
-/* ---------- IA ---------- */
 async function ask(question: string) {
     busy.value = true
     const line = push({ kind: 'ai', text: '', streaming: true }) as Extract<Line, { kind: 'ai' }>
@@ -274,7 +273,7 @@ async function ask(question: string) {
     try {
         const res = await fetch('/api/ask', {
             method: 'POST',
-            headers: { 'content-type': 'application/json' },
+            headers: { 'content-type': 'application/json', 'x-portfolio-client': 'terminal' },
             body: JSON.stringify({ question, history: conversation.slice(-6), locale: locale.value }),
         })
 
@@ -305,11 +304,10 @@ async function ask(question: string) {
     }
 }
 
-/* ---------- Boot ---------- */
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms))
 
 async function typeCommand(text: string, animate: boolean) {
-    const line = push({ kind: 'cmd', text: '' }) as Extract<Line, { kind: 'cmd' }>
+    const line = push({ kind: 'cmd', text: '' }) as TextLine
     if (!animate) {
         line.text = text
         return
@@ -336,7 +334,6 @@ onMounted(() => {
     boot(!window.matchMedia('(prefers-reduced-motion: reduce)').matches)
 })
 
-// Troca de idioma: reinicia o terminal já no novo idioma (sem animação)
 watch(locale, () => {
     if (!busy.value) {
         conversation.length = 0

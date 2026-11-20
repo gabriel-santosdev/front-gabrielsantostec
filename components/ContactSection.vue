@@ -224,7 +224,6 @@ watch(success, (val) => {
     color: var(--color-accent);
 }
 
-/* ---------- Terminal ---------- */
 .terminal {
     background: rgba(18, 18, 18, 0.9);
     border: 1px solid var(--color-border-strong);

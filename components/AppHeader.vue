@@ -66,7 +66,6 @@ onMounted(() => {
     onScroll()
     window.addEventListener('scroll', onScroll, { passive: true })
 
-    // Scrollspy: marca no menu a seção que está no meio da tela
     observer = new IntersectionObserver(
         (entries) => {
             for (const entry of entries) {

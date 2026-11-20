@@ -13,7 +13,6 @@
             <div class="projects__grid">
                 <article v-for="(project, index) in portfolio.projects" :key="project.title" v-reveal="index === 0 ? 0 : (index - 1) * 100"
                     class="project" :class="{ 'project--featured': index === 0 }">
-                    <!-- Mockup de navegador -->
                     <a class="browser" :href="project.live" target="_blank" rel="noopener noreferrer"
                         :aria-label="t('projects.openSite', { title: project.title })" tabindex="-1">
                         <div class="browser__bar">
@@ -96,7 +95,6 @@ function domain(url?: string): string {
     border-color: rgba(187, 153, 255, 0.35);
 }
 
-/* ---------- Mockup de navegador ---------- */
 .browser {
     display: block;
     margin: 16px 16px 0;
@@ -158,7 +156,6 @@ function domain(url?: string): string {
     transform: scale(1.04);
 }
 
-/* ---------- Texto ---------- */
 .project__text {
     padding: 28px 32px 32px;
     display: flex;
@@ -238,7 +235,6 @@ function domain(url?: string): string {
     color: var(--color-accent);
 }
 
-/* ---------- Destaque ---------- */
 .project--featured {
     grid-column: 1 / -1;
     display: grid;

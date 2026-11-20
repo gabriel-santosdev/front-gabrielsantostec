@@ -12,7 +12,6 @@
             </div>
         </div>
 
-        <!-- Faixa rolante com as tecnologias -->
         <div class="marquee" aria-hidden="true">
             <div class="marquee__track">
                 <span v-for="(tech, i) in [...marquee, ...marquee]" :key="i" class="marquee__item">{{ tech }}</span>
@@ -44,7 +43,6 @@ import { marqueeTechs as marquee } from '~/data/portfolio'
 const { t } = useI18n()
 const portfolio = usePortfolio()
 
-// Spotlight roxo que acompanha o cursor dentro do card
 function spotlight(e: PointerEvent) {
     const el = e.currentTarget as HTMLElement
     const rect = el.getBoundingClientRect()
@@ -58,7 +56,6 @@ function spotlight(e: PointerEvent) {
     overflow: hidden;
 }
 
-/* ---------- Faixa rolante ---------- */
 .marquee {
     position: relative;
     margin: 0 0 56px;
@@ -99,7 +96,6 @@ function spotlight(e: PointerEvent) {
     }
 }
 
-/* ---------- Cards ---------- */
 .stack__grid {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));

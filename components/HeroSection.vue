@@ -45,7 +45,6 @@
             <HeroTerminal class="hero__terminal" />
         </div>
 
-        <!-- Números rápidos -->
         <dl class="hero__stats">
             <div v-for="stat in stats" :key="stat.label" class="hero__stat">
                 <dt>{{ stat.label }}</dt>
@@ -70,7 +69,6 @@ const stats = computed(() =>
     }))
 )
 
-/* ---------- Efeito de digitação ---------- */
 const rolesRef = computed(() =>
     (['fullstack', 'frontend', 'backend', 'ai'] as const).map((key) => t(`hero.roles.${key}`))
 )
@@ -110,7 +108,6 @@ function startTyping() {
     typingTimer = setTimeout(tick, 2600)
 }
 
-/* ---------- Glow que segue o mouse ---------- */
 const sectionRef = ref<HTMLElement | null>(null)
 
 function onPointerMove(e: PointerEvent) {
@@ -126,7 +123,6 @@ onMounted(() => {
     if (animate) startTyping()
 })
 
-// Troca de idioma: recomeça a animação com os cargos traduzidos
 watch(locale, () => {
     clearTimeout(typingTimer)
     typed.value = rolesRef.value[0]
@@ -149,7 +145,6 @@ onBeforeUnmount(() => clearTimeout(typingTimer))
     gap: 56px;
 }
 
-/* Desbota a grade nas bordas */
 .hero::after {
     content: '';
     position: absolute;
@@ -195,7 +190,6 @@ onBeforeUnmount(() => clearTimeout(typingTimer))
     align-items: center;
 }
 
-/* ---------- Texto ---------- */
 .hero__prompt {
     font-family: var(--font-mono);
     font-size: 14px;
@@ -286,7 +280,6 @@ onBeforeUnmount(() => clearTimeout(typingTimer))
     transform: translateY(-2px);
 }
 
-/* ---------- Números ---------- */
 .hero__stats {
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
